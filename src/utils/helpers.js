@@ -48,5 +48,6 @@ const emojis = [
 ];
 
 export const getRandomEmoji = () => {
+  console.log('emojis[Math.floor(Math.random() * emojis.length)',emojis[Math.floor(Math.random() * emojis.length)]);
   return emojis[Math.floor(Math.random() * emojis.length)];
 };

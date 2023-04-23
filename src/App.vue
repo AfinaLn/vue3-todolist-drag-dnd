@@ -13,6 +13,6 @@ export default {
 <template>
   <!-- <div class="bg-gray-300 dark:bg-gray-900 h-screen flex flex-col"> -->
     <!-- <NavBar ></NavBar> -->
-    <router-view class="flex-grow p-4"></router-view>
+    <router-view ></router-view>
   <!-- </div> -->
 </template>
