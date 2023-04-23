@@ -1850,10 +1850,10 @@ vue@^3.0.0, "vue@^3.0.0-0 || ^2.6.0", vue@^3.0.11, vue@^3.2.0, vue@^3.2.47, "vue
     "@vue/server-renderer" "3.2.47"
     "@vue/shared" "3.2.47"
 
-vue3-smooth-dnd@^0.0.4:
-  version "0.0.4"
-  resolved "https://registry.npmjs.org/vue3-smooth-dnd/-/vue3-smooth-dnd-0.0.4.tgz"
-  integrity sha512-aPfPnUcF7cRlX/5pJeqam51NltzW5qsQNiJuAY/s73nJ9/yRKNpNNOItjpK11GusEkiK957Uf+e8ERUCabapSg==
+vue3-smooth-dnd@^0.0.5:
+  version "0.0.5"
+  resolved "https://registry.npmjs.org/vue3-smooth-dnd/-/vue3-smooth-dnd-0.0.5.tgz"
+  integrity sha512-A+l/ozaTGpFbw4fOdj4whmk+MedesOu/mBJgT3MfV+0XFvK44PLAMHB9vXn4lxaBlhZ/gRFs2TzG0kf24s1+3A==
   dependencies:
     smooth-dnd "^0.12.1"
 

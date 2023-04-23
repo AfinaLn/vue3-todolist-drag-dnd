@@ -7,7 +7,10 @@
     <div id="sun_red"></div>
     <div id="clouds"></div>
     <div id="ground"></div>
-    <div id="night"></div>
+    <!-- <div id="night"></div> -->
+    <div id="night" class="canvas-box">
+      <canvas id="canvas">你的浏览器不支持canvas</canvas>
+    </div>
     <div id="stars"></div>
     <div id="sstar"></div>
     <div id="moon"></div>
@@ -23,7 +26,7 @@
     <div class="page-content flex-grow p-4">
       <Container class="h-full flex overflow-x-auto gap-8 p-8" group-name="cols" tag="div" orientation="horizontal"
         @drop="onColumnDrop($event)">
-        <Draggable class="bg-gray-200 dark:bg-gray-700 rounded-lg h-full w-96 flex-shrink-0 shadow-xl"
+        <Draggable class="dragg-wrapper-bg bg-gray-200 dark:bg-gray-700 rounded-lg h-full w-96 flex-shrink-0 shadow-xl"
           v-for="(column, index) in scene.children" :key="index">
           <div class="h-full flex flex-col">
             <!-- header -->
@@ -1011,26 +1014,8 @@ export default {
   },
   mounted() {
     this.getTodo()
-
-    $(function () {
-      $('#sun_yellow').animate({ 'top': '96%', 'opacity': 0.4 }, 12000, function () {
-        $('#stars').animate({ 'opacity': 1 }, 5000, function () {
-          $('#moon').animate({ 'top': '30%', 'opacity': 1 }, 5000, function () {
-            $('#sstar').animate({ 'opacity': 1 }, 300);
-            $('#sstar').animate({
-              'backgroundPosition': '0px 0px', 'top': '15%', 'opacity': 0
-            }, 500, function () {
-              // $('#title').animate({'opacity':1}, 1000);
-              // $('#back').animate({'opacity':1}, 3000);
-            });
-          });
-        });
-      });
-      $('#sun_red').animate({ 'top': '96%', 'opacity': 0.8 }, 12000);
-      $('#sky').animate({ 'backgroundColor': '#4F0030' }, 18000);
-      $('#clouds').animate({ 'backgroundPosition': '1000px 0px', 'opacity': 0 }, 30000);
-      $('#night').animate({ 'opacity': 0.8 }, 20000);
-    });
+    this.animation()
+    this.meteor()
 
   },
   methods: {
@@ -1079,7 +1064,7 @@ export default {
     },
     saveData() {
       // 存储更新后的数据到 localStorage
-      console.log('setItem => loading',this.scene.children)
+      console.log('setItem => loading', this.scene.children)
       localStorage.setItem('items', JSON.stringify(this.scene.children))
     },
     getColumnHeightPx() {
@@ -1107,21 +1092,21 @@ export default {
         console.log('itemIndex', dropResult)
         console.log('newColumn', newColumn)
         // check if element was ADDED in current column
-        if (dropResult.removedIndex == null && dropResult.addedIndex >= 0) {
-          // your action / api call
-          dropResult.payload.loading = true
-          console.log('<<<===',dropResult,dropResult.payload.loading)
-          // simulate api call
-          setTimeout(function () {
-            dropResult.payload.loading = false
-            console.log('===>>>',dropResult,dropResult.payload.loading)
-          }, 1000)
-        }
+        // if (dropResult.removedIndex == null && dropResult.addedIndex >= 0) {
+        //   // your action / api call
+        //   dropResult.payload.loading = true
+        //   console.log('<<<===',dropResult,dropResult.payload.loading)
+        //   // simulate api call
+        //   setTimeout(function () {
+        //     dropResult.payload.loading = false
+        //     console.log('===>>>',dropResult,dropResult.payload.loading)
+        //   }, 1000)
+        // }
 
         newColumn.children = this.applyDrag(newColumn.children, dropResult)
         scene.children.splice(itemIndex, 1, newColumn)
         this.scene = scene
-        if(!dropResult.payload.loading) this.saveData()
+        this.saveData()
       }
     },
     getCardPayload(columnType) {
@@ -1155,7 +1140,137 @@ export default {
       }
       return id
     },
-  },
+
+    animation() {
+      $(function () {
+        $('#sun_yellow').animate({ 'top': '96%', 'opacity': 0.4 }, 12000, function () {
+          $('#stars').animate({ 'opacity': 1 }, 5000, function () {
+            $('#moon').animate({ 'top': '30%', 'opacity': 1 }, 5000, function () {
+              $('#sstar').animate({ 'opacity': 1 }, 300);
+              $('#sstar').animate({
+                'backgroundPosition': '0px 0px', 'top': '15%', 'opacity': 0
+              }, 500, function () {
+              });
+            });
+          });
+        });
+        $('#sun_red').animate({ 'top': '96%', 'opacity': 0.8 }, 12000);
+        $('#sky').animate({ 'backgroundColor': '#4F0030' }, 18000);
+        $('#clouds').animate({ 'backgroundPosition': '1000px 0px', 'opacity': 0 }, 30000);
+        $('#night').animate({ 'opacity': 0.8 }, 20000);
+      });
+    },
+    meteor() {
+      var WINDOW_WIDTH = document.body.offsetWidth;
+      var WINDOW_HEIGHT = document.body.offsetHeight;
+      var canvas, context;
+      var num = 300;
+      // var num = 500;
+      var stars = [];
+      var mouseX = WINDOW_WIDTH / 2;
+      var mouseY = WINDOW_HEIGHT / 2;
+      var rnd;
+
+      window.onload = function () {
+        console.log('=jiasjdaif')
+        canvas = document.getElementById('canvas');
+        canvas.width = WINDOW_WIDTH;
+        canvas.height = WINDOW_HEIGHT;
+
+        context = canvas.getContext('2d');
+
+        addStar();
+        setInterval(render, 33);
+        liuxing();
+
+        // render();
+        document.body.addEventListener('mousemove', mouseMove);
+      }
+
+      function liuxing() {
+        var time = Math.round(Math.random() * 3000 + 33);
+        setTimeout(function () {
+          rnd = Math.ceil(Math.random() * stars.length)
+          liuxing();
+        }, time)
+      }
+
+      function mouseMove(e) {
+        //因为是整屏背景，这里不做坐标转换
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+      }
+
+      function render() {
+        context.fillStyle = 'rgba(0,0,0,0.1)';
+        context.fillRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+        // context.clearRect(0,0,WINDOW_WIDTH,WINDOW_HEIGHT)
+        for (var i = 0; i < num; i++) {
+          var star = stars[i];
+          if (i == rnd) {
+            star.vx = -5;
+            star.vy = 20;
+            context.beginPath();
+            context.strokeStyle = 'rgba(255,255,255,' + star.alpha + ')';
+            context.lineWidth = star.r;
+            context.moveTo(star.x, star.y);
+            context.lineTo(star.x + star.vx, star.y + star.vy);
+            context.stroke();
+            context.closePath();
+          }
+          star.alpha += star.ra;
+          if (star.alpha <= 0) {
+            star.alpha = 0;
+            star.ra = -star.ra;
+            star.vx = Math.random() * 0.2 - 0.1;
+            star.vy = Math.random() * 0.2 - 0.1;
+          } else if (star.alpha > 1) {
+            star.alpha = 1;
+            star.ra = -star.ra
+          }
+          star.x += star.vx;
+          if (star.x >= WINDOW_WIDTH) {
+            star.x = 0;
+          } else if (star.x < 0) {
+            star.x = WINDOW_WIDTH;
+            star.vx = Math.random() * 0.2 - 0.1;
+            star.vy = Math.random() * 0.2 - 0.1;
+          }
+          star.y += star.vy;
+          if (star.y >= WINDOW_HEIGHT) {
+            star.y = 0;
+            star.vy = Math.random() * 0.2 - 0.1;
+            star.vx = Math.random() * 0.2 - 0.1;
+          } else if (star.y < 0) {
+            star.y = WINDOW_HEIGHT;
+          }
+          context.beginPath();
+          var bg = context.createRadialGradient(star.x, star.y, 0, star.x, star.y, star.r);
+          bg.addColorStop(0, 'rgba(255,255,255,' + star.alpha + ')')
+          bg.addColorStop(1, 'rgba(255,255,255,0)')
+          context.fillStyle = bg;
+          context.arc(star.x, star.y, star.r, 0, Math.PI * 2, true);
+          context.fill();
+          context.closePath();
+        }
+      }
+
+      function addStar() {
+        for (var i = 0; i < num; i++) {
+          var aStar = {
+            x: Math.round(Math.random() * WINDOW_WIDTH),
+            y: Math.round(Math.random() * WINDOW_HEIGHT),
+            r: Math.random() * 3,
+            ra: Math.random() * 0.05,
+            alpha: Math.random(),
+            vx: Math.random() * 0.2 - 0.1,
+            vy: Math.random() * 0.2 - 0.1
+          }
+          stars.push(aStar);
+        }
+      }
+    }
+  }
 }
 </script>
 <style scoped lang="scss">
@@ -1169,6 +1284,9 @@ export default {
   display: flex !important;
 }
 
+.dragg-wrapper-bg {
+  background: #a855f736;
+}
 // .ml20{
 //   margin-left: 20px;
 // }

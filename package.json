@@ -15,7 +15,7 @@
     "element-plus": "^2.3.3",
     "vue": "^3.2.47",
     "vue-router": "^4.0.8",
-    "vue3-smooth-dnd": "^0.0.4",
+    "vue3-smooth-dnd": "^0.0.5",
     "vuex": "^4.0.1"
   },
   "devDependencies": {
