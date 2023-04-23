@@ -1,20 +1,20 @@
 <template>
   <div class="flex justify-between p-4 shadow-lg bg-gray-50 dark:bg-gray-800">
-    <a href="https://github.com/gilnd/vue3-smooth-dnd" class="flex hover:text-primary text-2xl font-bold">
+    <!-- <a href="https://github.com/gilnd/vue3-smooth-dnd" class="flex hover:text-primary text-2xl font-bold">
       <HandIcon class="h-8 w-8"></HandIcon>
       <span class="">vue3-smooth-dnd</span>
-    </a>
+    </a> -->
     <div class="flex space-x-6 text-lg">
       <a href="https://kutlugsahin.github.io/vue-smooth-dnd"
         class="flex space-x-2 items-center hover:text-primary">
         <CodeIcon class="h-6 w-6"></CodeIcon>
         <span>Other Demos</span>
       </a>
-      <a href="https://github.com/gilnd/vue3-smooth-dnd/blob/main/packages/example/src/pages/Kanban.vue"
+      <!-- <a href="https://github.com/gilnd/vue3-smooth-dnd/blob/main/packages/example/src/pages/Kanban.vue"
         class="flex space-x-2 items-center hover:text-primary">
         <CodeIcon class="h-6 w-6"></CodeIcon>
         <span>View source</span>
-      </a>
+      </a> -->
       <theme-toggler></theme-toggler>
     </div>
   </div>

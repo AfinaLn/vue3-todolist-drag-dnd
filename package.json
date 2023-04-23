@@ -1,7 +1,7 @@
 {
-  "name": "example",
+  "name": "vue3-todolist-main",
   "version": "0.0.1",
-  "homepage": "http://gilnd.github.io/vue3-smooth-dnd",
+  "homepage": "",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
