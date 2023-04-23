@@ -6,4 +6,4 @@
   <!-- <a href="https://gilnd.github.io/vue3-smooth-dnd" target="__blank"><b>Live demo</b></a> -->
 </p>
 
-![screen](./src/assets/img/screen.png?raw=true "Demo Screenshot")
+<!-- ![screen](./src/assets/img/screen.png?raw=true "Demo Screenshot") -->
