@@ -1,72 +1,56 @@
 <template>
-  <div class="page bg-gray-300 dark:bg-gray-900 h-screen flex flex-col">
+  <!-- <div id="sky"></div> -->
+  <!-- <div id="title"></div> -->
+
+  <div id="sky" class="page bg-gray-300 dark:bg-gray-900 h-screen flex flex-col">
+    <div id="sun_yellow"></div>
+    <div id="sun_red"></div>
+    <div id="clouds"></div>
+    <div id="ground"></div>
+    <div id="night"></div>
+    <div id="stars"></div>
+    <div id="sstar"></div>
+    <div id="moon"></div>
     <div class="page-header">
       <div class="page-header-item">asfd</div>
       <div class="page-header-input">
-        <el-input
-          v-model="newTodo"
-          placeholder="请输入..."
-          clearable
-          class="mr20"
-          autocomplete="off"
-          name="news"
-          @input="change($event)"
-          @change="addTodo($event)"
-        />
+        <el-input v-model="newTodo" placeholder="请输入..." clearable class="mr20" autocomplete="off" name="news"
+          @input="change($event)" @change="addTodo($event)" />
         <el-button type="primary" @click="addTodo($event)">提交</el-button>
       </div>
       <div class="page-header-item">asfd</div>
     </div>
     <div class="page-content flex-grow p-4">
-      <Container
-        class="h-full flex overflow-x-auto gap-8 p-8"
-        group-name="cols"
-        tag="div"
-        orientation="horizontal"
-        @drop="onColumnDrop($event)"
-      >
-        <Draggable
-          class="bg-gray-200 dark:bg-gray-700 rounded-lg h-full w-96 flex-shrink-0 shadow-xl"
-          v-for="(column, index) in scene.children"
-          :key="index"
-        >
+      <Container class="h-full flex overflow-x-auto gap-8 p-8" group-name="cols" tag="div" orientation="horizontal"
+        @drop="onColumnDrop($event)">
+        <Draggable class="bg-gray-200 dark:bg-gray-700 rounded-lg h-full w-96 flex-shrink-0 shadow-xl"
+          v-for="(column, index) in scene.children" :key="index">
           <div class="h-full flex flex-col">
             <!-- header -->
-            <div
-              class="cursor-move rounded-t-lg p-4 space-x-4 bg-primary text-white flex space-x-2"
-            >
+            <div class="cursor-move rounded-t-lg p-4 space-x-4 bg-primary text-white flex space-x-2">
               <HandIcon class="h-6 w-6"></HandIcon>
               <span class="text-lg">{{ column.name }}</span>
             </div>
             <!-- column  -->
-            <Container
-              class="page-content-column flex-grow overflow-y-auto overflow-x-hidden"
-              group-name="col-items"
-              :shouldAcceptDrop="
-                (e, payload) => e.groupName === 'col-items' && !payload.loading
-              "
-              :get-child-payload="getCardPayload(column.type)"
-              :drop-placeholder="{
-                className: `bg-primary bg-opacity-20  
+            <Container class="page-content-column flex-grow overflow-y-auto overflow-x-hidden" group-name="col-items"
+              :shouldAcceptDrop="(e, payload) => e.groupName === 'col-items' && !payload.loading
+                " :get-child-payload="getCardPayload(column.type)" :drop-placeholder="{
+      className: `bg-primary bg-opacity-20  
             border-dotted border-2 
             border-primary rounded-lg mx-4 my-2`,
-                animationDuration: '200',
-                showOnTop: true,
-              }"
-              drag-class="bg-primary dark:bg-primary 
+      animationDuration: '200',
+      showOnTop: true,
+    }" drag-class="bg-primary dark:bg-primary 
             border-2 border-primary-hover text-white 
             transition duration-100 ease-in z-50
-            transform rotate-6 scale-110"
-              drop-class="transition duration-100 
+            transform rotate-6 scale-110" drop-class="transition duration-100 
             ease-in z-50 transform 
-            -rotate-2 scale-90"
-              @drop="(e) => onCardDrop(column.type, e)">
+            -rotate-2 scale-90" @drop="(e) => onCardDrop(column.type, e)">
               <!-- Items  -->
               <template v-for="item in column.children">
                 <Draggable :key="item.id" :item="item" v-if="item">
                   <div
-                    class=" cursor-move my-2 mx-4 rounded-lg shadow-md bg-gray-100 dark:bg-gray-800 hover:border-2 border-primary "
-                  >
+                    class=" cursor-move my-2 mx-4 rounded-lg shadow-md bg-gray-100 dark:bg-gray-800 hover:border-2 border-primary ">
                     <!-- <div class="list-left"> list
                       <el-icon class="el-input_icon">
                         <HelpFilled  size="6px" :color="priorityColor[item.priority]" /></el-icon>
@@ -79,22 +63,16 @@
                         <HelpFilled  size="6px" :color="priorityColor[item.priority]" /></el-icon>
                       </div>
                     </div> -->
-                    <div
-                      v-if="item.loading"
-                      class="flex space-x-2 bg-gray-50 text-gray-900 dark:text-gray-200 dark:bg-gray-900 px-4 py-2 rounded-t-lg"
-                    >
-                      <RefreshIcon
-                        class="w-6 h-6 animate-spin"
-                        viewBox="0 0 24 24"
-                      ></RefreshIcon>
+                    <div v-if="item.loading"
+                      class="flex space-x-2 bg-gray-50 text-gray-900 dark:text-gray-200 dark:bg-gray-900 px-4 py-2 rounded-t-lg">
+                      <RefreshIcon class="w-6 h-6 animate-spin" viewBox="0 0 24 24"></RefreshIcon>
                       <span>Processing...</span>
                     </div>
                     <div class="p-4 space-y-2">
-                      <div
-                        class="rounded-lg p-2 w-max  inline-block box-content"
-                      >
-                       <el-icon class="el-input_icon">
-                        <HelpFilled  size="6px" :color="priorityColor[item.priority]" /></el-icon>
+                      <div class="rounded-lg p-2 w-max  inline-block box-content">
+                        <el-icon class="el-input_icon">
+                          <HelpFilled size="6px" :color="priorityColor[item.priority]" />
+                        </el-icon>
                         {{ item.data }}
                       </div>
                       <div class="item">{{ item.dateName }}</div>
@@ -116,7 +94,7 @@ import { Container, Draggable } from 'vue3-smooth-dnd'
 import { HandIcon, RefreshIcon } from '@heroicons/vue/outline'
 import 'element-plus/dist/index.css';
 import { ElButton, ElInput, ElIcon } from 'element-plus'
-import { Edit, Check, Message, HelpFilled  } from '@element-plus/icons-vue'
+import { Edit, Check, Message, HelpFilled } from '@element-plus/icons-vue'
 const form = reactive({
   name: '',
 })
@@ -142,7 +120,7 @@ const todoLists = [
         data: 'lina',
         date: 'today',
         dateName: '今天',
-        priority:'high',
+        priority: 'high',
       },
     ],
   },
@@ -160,7 +138,7 @@ const todoLists = [
         data: 'fg',
         date: 'today',
         dateName: '今天',
-        priority:'low',
+        priority: 'low',
       },
     ],
   },
@@ -178,7 +156,7 @@ const todoLists = [
         data: 'yike',
         date: 'today',
         dateName: '今天',
-        priority:'medium',
+        priority: 'medium',
       },
     ],
   },
@@ -1013,18 +991,18 @@ const emojis = [
 ]
 
 export default {
-  components: { Container, Draggable, ElButton, ElInput,ElIcon,HelpFilled , },
+  components: { Container, Draggable, ElButton, ElInput, ElIcon, HelpFilled, },
   data() {
     return {
       scene,
       emoji: '😍',
       newItem: '',
       todoItems: [],
-      priorityColor:{
-        'high':'#DB3B26',
-        'medium':'#FFB95B',
-        'low':'#169BFA',
-        'generally':''
+      priorityColor: {
+        'high': '#DB3B26',
+        'medium': '#FFB95B',
+        'low': '#169BFA',
+        'generally': ''
       },
     }
   },
@@ -1033,6 +1011,27 @@ export default {
   },
   mounted() {
     this.getTodo()
+
+    $(function () {
+      $('#sun_yellow').animate({ 'top': '96%', 'opacity': 0.4 }, 12000, function () {
+        $('#stars').animate({ 'opacity': 1 }, 5000, function () {
+          $('#moon').animate({ 'top': '30%', 'opacity': 1 }, 5000, function () {
+            $('#sstar').animate({ 'opacity': 1 }, 300);
+            $('#sstar').animate({
+              'backgroundPosition': '0px 0px', 'top': '15%', 'opacity': 0
+            }, 500, function () {
+              // $('#title').animate({'opacity':1}, 1000);
+              // $('#back').animate({'opacity':1}, 3000);
+            });
+          });
+        });
+      });
+      $('#sun_red').animate({ 'top': '96%', 'opacity': 0.8 }, 12000);
+      $('#sky').animate({ 'backgroundColor': '#4F0030' }, 18000);
+      $('#clouds').animate({ 'backgroundPosition': '1000px 0px', 'opacity': 0 }, 30000);
+      $('#night').animate({ 'opacity': 0.8 }, 20000);
+    });
+
   },
   methods: {
     change() {
@@ -1046,7 +1045,7 @@ export default {
         data: this.newTodo,
         date: 'today',
         dateName: '今天',
-        priority:'generally',
+        priority: 'generally',
       }
       const data = scene.children
       const todoIndex = data.findIndex((column) => column.type === 'todo')
@@ -1080,6 +1079,7 @@ export default {
     },
     saveData() {
       // 存储更新后的数据到 localStorage
+      console.log('setItem => loading',this.scene.children)
       localStorage.setItem('items', JSON.stringify(this.scene.children))
     },
     getColumnHeightPx() {
@@ -1093,10 +1093,10 @@ export default {
       this.saveData()
     },
     onCardDrop(columnType, dropResult) {
-      debugger
-      console.log('dropResult', dropResult)
-      // type=dropResult.payload.type
-      debugger
+      // debugger
+      // console.log('dropResult', dropResult)
+      // // type=dropResult.payload.type
+      // debugger
       // check if element where ADDED or REMOVED in current collumn
       if (dropResult.removedIndex !== null || dropResult.addedIndex !== null) {
         const scene = Object.assign({}, this.scene)
@@ -1110,16 +1110,18 @@ export default {
         if (dropResult.removedIndex == null && dropResult.addedIndex >= 0) {
           // your action / api call
           dropResult.payload.loading = true
+          console.log('<<<===',dropResult,dropResult.payload.loading)
           // simulate api call
           setTimeout(function () {
             dropResult.payload.loading = false
+            console.log('===>>>',dropResult,dropResult.payload.loading)
           }, 1000)
         }
 
         newColumn.children = this.applyDrag(newColumn.children, dropResult)
         scene.children.splice(itemIndex, 1, newColumn)
         this.scene = scene
-        this.saveData()
+        if(!dropResult.payload.loading) this.saveData()
       }
     },
     getCardPayload(columnType) {
@@ -1158,6 +1160,7 @@ export default {
 </script>
 <style scoped lang="scss">
 @import './HomePage.scss';
+
 /** NB: dont remove, 
 * When using orientation="horizontal" it auto sets "display: table"
 * In this case we need flex and not display table  
@@ -1165,6 +1168,7 @@ export default {
 .smooth-dnd-container.horizontal {
   display: flex !important;
 }
+
 // .ml20{
 //   margin-left: 20px;
 // }
