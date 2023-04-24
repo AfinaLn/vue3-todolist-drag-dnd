@@ -18,7 +18,7 @@
       <div class="page-header-item">asfd</div>
       <div class="page-header-input">
         <el-input v-model="newTodo" placeholder="例如：每天11:30定外卖" clearable class="mr20" autocomplete="off" name="news"
-          maxlength="18" show-word-limit @input="change($event)" />
+          maxlength="18" show-word-limit @input="change($event)" @="change($event)"/>
         <el-button type="primary" @click="addTodo($event)">提交</el-button>
       </div>
       <div class="page-header-item">asfd</div>
@@ -51,7 +51,7 @@
               <!-- Items  -->
               <template v-for="item in column.children">
                 <Draggable :key="item.id" :item="item" v-if="item">
-                  <div @click="openMessage(item)"
+                  <div @click="openDialog(item)"
                     class="cursor-move my-2 mx-4 rounded-lg shadow-md bg-gray-100 dark:bg-gray-800 hover:border-2 border-primary">
                     <div class="list space-y-2 flex-row space-between">
                       <div class="list-left rounded-lg p-2 w-max inline-block box-content flex-row">
@@ -62,7 +62,7 @@
                       </div>
                       <div class="list-right cursor">
                         <div class="list-right-date">{{ item.dateName }}</div>
-                        <div class="list-right-icon" v-show="item.isRepeat">
+                        <div class="list-right-icon" v-show="item.repeat!=='no'">
                           <el-icon size="14" color="#475669">
                             <Refresh />
                           </el-icon>
@@ -78,23 +78,33 @@
       </Container>
     </div>
 
-    <el-dialog v-model="dialogFormVisible" title="日期设置">
+    <el-dialog v-model="dialogFormVisible" :title="dialogTitle">
       <!-- <vue-hash-calendar /> -->
       <el-form :model="form">
-        <el-form-item label="Promotion name" :label-width="formLabelWidth">
-          <el-input v-model="form.name" autocomplete="off" />
+        <el-form-item label="日期" :label-width="formLabelWidth">
+            <el-date-picker
+              v-model="form.date"
+              type="date"
+              placeholder="选择日期"
+            />
         </el-form-item>
-        <el-form-item label="Zones" :label-width="formLabelWidth">
-          <el-select v-model="form.region" placeholder="Please select a zone">
-            <el-option label="Zone No.1" value="shanghai" />
-            <el-option label="Zone No.2" value="beijing" />
+        <el-form-item label="优先级" :label-width="formLabelWidth">
+          <el-select v-model="form.priority" >
+            <el-option 
+          v-for="(option, index) in priorityData" :key="option.value + index" :label="option.label" :value="option.value" />
+          </el-select>
+        </el-form-item>
+         <el-form-item label="重复" :label-width="formLabelWidth">
+          <el-select v-model="form.repeat" >
+            <el-option 
+          v-for="(option, index) in repeatData" :key="option.value + index" :label="option.label" :value="option.value" />
           </el-select>
         </el-form-item>
       </el-form>
       <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="dialogFormVisible = false">重置</el-button>
-          <el-button type="primary" @click="dialogFormVisible = false">
+        <span class="dialog-footer ">
+          <el-button @click="resetDialog()">重置</el-button>
+          <el-button type="primary" @click="submitDialog()">
             确定
           </el-button>
         </span>
@@ -120,6 +130,7 @@ import {
   ElFormItem,
   ElSelect,
   ElOption,
+  ElDatePicker
 } from 'element-plus'
 import VueHashCalendar from 'vue3-hash-calendar'
 import 'vue3-hash-calendar/es/index.css'
@@ -131,37 +142,8 @@ import {
   Refresh,
 } from '@element-plus/icons-vue'
 
-
-const gridData = [
-  {
-    date: '2016-05-02',
-    name: 'John Smith',
-    address: 'No.1518,  Jinshajiang Road, Putuo District',
-  },
-  {
-    date: '2016-05-04',
-    name: 'John Smith',
-    address: 'No.1518,  Jinshajiang Road, Putuo District',
-  },
-  {
-    date: '2016-05-01',
-    name: 'John Smith',
-    address: 'No.1518,  Jinshajiang Road, Putuo District',
-  },
-  {
-    date: '2016-05-03',
-    name: 'John Smith',
-    address: 'No.1518,  Jinshajiang Road, Putuo District',
-  },
-]
 const newTodo = ref('')
-const defaultData = [
-  {
-    done: false,
-    content: 'Write a blog post',
-  },
-]
-const todos = []
+
 const todoLists = [
   {
     type: 'todo',
@@ -171,11 +153,13 @@ const todoLists = [
     },
     children: [
       {
+        id: `00001`,
         type: 'todo',
         content: '下班后去超市买零食',
         date: 'today',
         dateName: '今天',
         priority: 'low',
+        repeat:'no'
       },
     ],
   },
@@ -188,11 +172,12 @@ const todoLists = [
     children: [
       {
         type: 'doing',
-        id: `0`,
+        id: `00002`,
         content: '表单校验bug修复',
         date: 'today',
         dateName: '今天',
         priority: 'high',
+        repeat:'no'
       },
     ],
   },
@@ -205,12 +190,12 @@ const todoLists = [
     children: [
       {
         type: 'done',
-        id: `0`,
+        id: `00003`,
         content: '准备晨会内容',
         date: 'today',
         dateName: '今天',
         priority: 'medium',
-        isRepeat: 'day',
+        repeat: 'day',
       },
     ],
   },
@@ -240,34 +225,66 @@ export default {
     ElFormItem,
     ElSelect,
     ElOption,
+    ElDatePicker
   },
   data() {
     return {
       scene,
-      priorityColor: {
+    }
+  },
+  setup() {
+    const currentObj= ref('')
+    const dialogFormVisible = ref(false)
+    const formLabelWidth = '100px'
+    const dialogTitle=ref('')
+    const priorityColor={
         high: '#DB3B26',
         medium: '#FFB95B',
         low: '#169BFA',
         nomal: '#9da1aa',
-      },
-      // dialogFormVisible:false
     }
-  },
-  setup() {
-    const dialogFormVisible = ref(false)
-    const formLabelWidth = '140px'
-
-    const form = reactive({
-      name: '',
-      region: '',
-      date1: '',
-      date2: '',
-      delivery: false,
-      type: [],
-      resource: '',
-      desc: '',
-    })
-    return {form,dialogFormVisible,formLabelWidth}
+    const repeatData=[
+       {
+        label:'无',
+        value:'no',
+      },
+      {
+        label:'每天',
+        value:'day',
+      },
+      {
+        label:'每周',
+        value:'day',
+      },
+      {
+        label:'每月',
+        value:'month',
+      }
+    ]
+    const priorityData=[
+      {
+        label:'高优先级',
+        value:'high',
+      },
+      {
+        label:'中优先级',
+        value:'medium',
+      },
+      {
+        label:'低优先级',
+        value:'low',
+      },
+      {
+        label:'无优先级',
+        value:'nomal',
+      }
+    ]
+     const form=ref({
+        date: '',
+        priority:'nomal',
+        repeat: 'no',
+      })
+    return {form,dialogFormVisible,formLabelWidth,priorityColor,priorityData,repeatData}
   },
   mounted() {
     this.getTodo()
@@ -286,8 +303,9 @@ export default {
         date: 'today',
         dateName: '今天',
         priority: 'nomal',
+        repeat:'no'
       }
-      const data = scene.children
+      const data = this.scene.children
       const todoIndex = data.findIndex((column) => column.type === 'todo')
       const todoColumn = data[todoIndex] // 获取该列的对象
       const newTodoChildren = [obj, ...todoColumn.children]
@@ -302,10 +320,35 @@ export default {
       this.change()
       this.saveData()
     },
-    openMessage() {
-      console.log('bbb', this.dialogFormVisible)
+    openDialog(obj) {
+      this.currentObj=obj;
+      this.dialogTitle=obj.content;
+      const {date,priority,repeat}=obj;
+      this.form={date,priority,repeat};
       this.dialogFormVisible = true
       console.log('aaaa', this.dialogFormVisible)
+    },
+    submitDialog(){
+      const data = this.scene.children;
+      const { date,priority,repeat}=this.form;
+      const listIndex = data.findIndex(list => list.type === this.currentObj.type);
+      const listItemIndex = data[listIndex].children.findIndex(child => child.id === this.currentObj.id);
+
+      if (listItemIndex !== -1) {
+        data[listIndex].children[listItemIndex] = {
+          ...todoLists[listIndex].children[listItemIndex],
+          dateName:date,
+          priority,
+          repeat,
+        };
+      }
+      this.scene.children=data;
+      this.saveData()
+      this.resetDialog();
+    },
+    resetDialog(){
+      this.dialogTitle='';
+      this.dialogFormVisible = false
     },
     getTodo() {
       // 读取 localStorage 中的数据
