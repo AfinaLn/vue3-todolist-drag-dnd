@@ -2,10 +2,7 @@
   <!-- <div id="sky"></div> -->
   <!-- <div id="title"></div> -->
 
-  <div
-    id="sky"
-    class="page bg-gray-300 dark:bg-gray-900 h-screen flex flex-col"
-  >
+  <div id="sky" class="page bg-gray-300 dark:bg-gray-900 h-screen flex flex-col">
     <div id="sun_yellow"></div>
     <div id="sun_red"></div>
     <div id="clouds"></div>
@@ -20,81 +17,45 @@
     <div class="page-header">
       <div class="page-header-item">asfd</div>
       <div class="page-header-input">
-        <el-input
-          v-model="newTodo"
-          placeholder="例如：每天11:30定外卖"
-          clearable
-          class="mr20"
-          autocomplete="off"
-          name="news"
-          maxlength="18"
-          show-word-limit
-          @input="change($event)"
-        />
+        <el-input v-model="newTodo" placeholder="例如：每天11:30定外卖" clearable class="mr20" autocomplete="off" name="news"
+          maxlength="18" show-word-limit @input="change($event)" />
         <el-button type="primary" @click="addTodo($event)">提交</el-button>
       </div>
       <div class="page-header-item">asfd</div>
     </div>
     <div class="page-content flex-grow p-4">
-      <Container
-        class="h-full flex overflow-x-auto gap-8 p-8"
-        group-name="cols"
-        tag="div"
-        orientation="horizontal"
-        @drop="onColumnDrop($event)"
-      >
-        <Draggable
-          class="dragg-wrapper-bg bg-gray-200 dark:bg-gray-700 rounded-lg h-full w-96 flex-shrink-0 shadow-xl"
-          v-for="(column, index) in scene.children"
-          :key="index"
-        >
+      <Container class="h-full flex overflow-x-auto gap-8 p-8" group-name="cols" tag="div" orientation="horizontal"
+        @drop="onColumnDrop($event)">
+        <Draggable class="dragg-wrapper-bg bg-gray-200 dark:bg-gray-700 rounded-lg h-full w-96 flex-shrink-0 shadow-xl"
+          v-for="(column, index) in scene.children" :key="index">
           <div class="h-full flex flex-col">
             <!-- header -->
-            <div
-              class="cursor-move rounded-t-lg p-4 space-x-4 bg-primary text-white flex space-x-2"
-            >
+            <div class="cursor-move rounded-t-lg p-4 space-x-4 bg-primary text-white flex space-x-2">
               <span class="text-lg font-header-30">{{ column.name }}</span>
             </div>
             <!-- column  -->
-            <Container
-              class="page-content-column flex-grow overflow-y-auto overflow-x-hidden"
-              group-name="col-items"
-              :shouldAcceptDrop="
-                (e, payload) => e.groupName === 'col-items' && !payload.loading
-              "
-              :get-child-payload="getCardPayload(column.type)"
-              :drop-placeholder="{
-                className: `bg-primary bg-opacity-20  
+            <Container class="page-content-column flex-grow overflow-y-auto overflow-x-hidden" group-name="col-items"
+              :shouldAcceptDrop="(e, payload) => e.groupName === 'col-items' && !payload.loading
+                " :get-child-payload="getCardPayload(column.type)" :drop-placeholder="{
+      className: `bg-primary bg-opacity-20  
             border-dotted border-2 
             border-primary rounded-lg mx-4 my-2`,
-                animationDuration: '200',
-                showOnTop: true,
-              }"
-              drag-class="bg-primary dark:bg-primary 
+      animationDuration: '200',
+      showOnTop: true,
+    }" drag-class="bg-primary dark:bg-primary 
             border-2 border-primary-hover text-white 
             transition duration-100 ease-in z-50
-            transform rotate-6 scale-110"
-              drop-class="transition duration-100 
+            transform rotate-6 scale-110" drop-class="transition duration-100 
             ease-in z-50 transform 
-            -rotate-2 scale-90"
-              @drop="(e) => onCardDrop(column.type, e)"
-            >
+            -rotate-2 scale-90" @drop="(e) => onCardDrop(column.type, e)">
               <!-- Items  -->
               <template v-for="item in column.children">
                 <Draggable :key="item.id" :item="item" v-if="item">
-                  <div
-                    @click="openMessage(item)"
-                    class="cursor-move my-2 mx-4 rounded-lg shadow-md bg-gray-100 dark:bg-gray-800 hover:border-2 border-primary"
-                  >
+                  <div @click="openMessage(item)"
+                    class="cursor-move my-2 mx-4 rounded-lg shadow-md bg-gray-100 dark:bg-gray-800 hover:border-2 border-primary">
                     <div class="list space-y-2 flex-row space-between">
-                      <div
-                        class="list-left rounded-lg p-2 w-max inline-block box-content flex-row"
-                      >
-                        <el-icon
-                          class="el-input_icon"
-                          size="20px"
-                          :color="priorityColor[item.priority]"
-                        >
+                      <div class="list-left rounded-lg p-2 w-max inline-block box-content flex-row">
+                        <el-icon class="el-input_icon" size="20px" :color="priorityColor[item.priority]">
                           <HelpFilled />
                         </el-icon>
                         <span class="list-left-name">{{ item.content }}</span>
@@ -120,7 +81,7 @@
     <el-dialog v-model="dialogFormVisible" title="日期设置">
       <el-input v-model="newTodo" autocomplete="off" />
       <vue-hash-calendar />
-      <!-- <el-form :model="form">
+      <el-form :model="form">
         <el-form-item label="Promotion name" :label-width="formLabelWidth">
           <el-input v-model="form.name" autocomplete="off" />
         </el-form-item>
@@ -130,7 +91,7 @@
             <el-option label="Zone No.2" value="beijing" />
           </el-select>
         </el-form-item>
-      </el-form> -->
+      </el-form>
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="dialogFormVisible = false">重置</el-button>
@@ -171,19 +132,7 @@ import {
   Refresh,
 } from '@element-plus/icons-vue'
 
-const dialogFormVisible = ref(true)
-const formLabelWidth = '140px'
 
-const form = reactive({
-  name: '',
-  region: '',
-  date1: '',
-  date2: '',
-  delivery: false,
-  type: [],
-  resource: '',
-  desc: '',
-})
 
 const gridData = [
   {
@@ -1128,11 +1077,27 @@ export default {
         low: '#169BFA',
         nomal: '#9da1aa',
       },
-      dialogFormVisible:false
+      // dialogFormVisible:false
     }
   },
   beforeCreated() {
     this.emoji = this.getRandomEmoji()
+  },
+  setup() {
+    const dialogFormVisible = ref(true)
+    const formLabelWidth = '140px'
+
+    const form = reactive({
+      name: '',
+      region: '',
+      date1: '',
+      date2: '',
+      delivery: false,
+      type: [],
+      resource: '',
+      desc: '',
+    })
+    return {form,dialogFormVisible,formLabelWidth}
   },
   mounted() {
     this.getTodo()
@@ -1169,9 +1134,9 @@ export default {
       this.saveData()
     },
     openMessage() {
-      console.log('bbb',this.dialogFormVisible)
+      console.log('bbb', this.dialogFormVisible)
       this.dialogFormVisible = true
-      console.log('aaaa',this.dialogFormVisible)
+      console.log('aaaa', this.dialogFormVisible)
     },
     getTodo() {
       // 读取 localStorage 中的数据
@@ -1271,7 +1236,7 @@ export default {
                     opacity: 0,
                   },
                   500,
-                  function () {},
+                  function () { },
                 )
               })
             })
@@ -1420,6 +1385,7 @@ export default {
 .dragg-wrapper-bg {
   background: #a855f736;
 }
+
 // .ml20{
 //   margin-left: 20px;
 // }
