@@ -119,7 +119,7 @@
 
     <el-dialog v-model="dialogFormVisible" title="日期设置">
       <el-input v-model="newTodo" autocomplete="off" />
-      <!-- <vue-hash-calendar /> -->
+      <vue-hash-calendar />
       <!-- <el-form :model="form">
         <el-form-item label="Promotion name" :label-width="formLabelWidth">
           <el-input v-model="form.name" autocomplete="off" />
@@ -1128,6 +1128,7 @@ export default {
         low: '#169BFA',
         nomal: '#9da1aa',
       },
+      dialogFormVisible:false
     }
   },
   beforeCreated() {
@@ -1168,7 +1169,9 @@ export default {
       this.saveData()
     },
     openMessage() {
+      console.log('bbb',this.dialogFormVisible)
       this.dialogFormVisible = true
+      console.log('aaaa',this.dialogFormVisible)
     },
     getTodo() {
       // 读取 localStorage 中的数据
