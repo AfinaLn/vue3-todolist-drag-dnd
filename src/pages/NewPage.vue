@@ -1,9 +1,11 @@
 <script setup>
-import { reactive, ref, onMounted } from 'vue';
+import { reactive, ref, onMounted, getCurrentInstance } from 'vue';
 import { Container, Draggable } from 'vue3-smooth-dnd'
 import { ElInput } from 'element-plus'
 import { HelpFilled, Refresh } from '@element-plus/icons-vue'
+const {ctx} = getCurrentInstance()
 const currentDate = ref('2023-4-25');
+
 const priorityColor = {
     high: '#DB3B26',
     medium: '#FFB95B',
@@ -105,11 +107,13 @@ function addTodo() {
     ]
     newScene.children = newData
     newTodo.value = ''
-    // this.change()
+    change()
     console.log('addtodo', newScene)
     saveData(newScene)
 }
-
+function change() {
+    ctx.$forceUpdate()
+}
 function generateId() {
     const characters =
         'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
@@ -290,7 +294,7 @@ function init() {
             <div class="search-bar">
                 <!-- <input type="text" v-model="newTodo" placeholder="Search"> -->
                 <el-input v-model="newTodo" placeholder="例如：每天11:30定外卖" clearable class="mr20" autocomplete="off"
-                    name="news" maxlength="18" show-word-limit @keyup.enter.native="addTodo" />
+                    name="news" maxlength="18" show-word-limit @input="change()" @keyup.enter.native="addTodo" />
             </div>
             <div class="header-profile">
                 <div class="notification">
