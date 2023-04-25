@@ -1,317 +1,104 @@
-<template>
-  <div class="bg-gray-300 dark:bg-gray-900 h-screen flex flex-col">
-    <!-- <div class="page-header">
-      <form @submit.prevent="addItem">
-        <input v-model="newItem" placeholder="Add item" name="newTodo" autocomplete="off" />
-        <button type="submit">Add</button>
-      </form>
-      <ul>
-        <li v-for="(item, index) in todoLists" :key="index">{{ item }}</li>
-      </ul>
-    </div> -->
-    <Container
-      class="h-full flex overflow-x-auto gap-8 p-8"
-      group-name="cols"
-      tag="div"
-      orientation="horizontal"
-      @drop="onColumnDrop($event)"
-    >
-      <Draggable
-        class="bg-gray-200 dark:bg-gray-700 rounded-lg h-full w-96 flex-shrink-0 shadow-xl"
-        v-for="column in scene.children"
-        :key="column.id"
-      >
-        <div class="h-full flex flex-col">
-          <!-- header -->
-          <div
-            class="cursor-move rounded-t-lg p-4 space-x-4 bg-primary text-white flex space-x-2"
-          >
-            <!-- <HandIcon class="h-6 w-6"></HandIcon> -->
-            <span class="text-lg">{{ column.name }}</span>
-          </div>
-          <!-- column  -->
-          <Container
-            class="flex-grow overflow-y-auto overflow-x-hidden"
-            group-name="col-items"
-            :shouldAcceptDrop="
-              (e, payload) => e.groupName === 'col-items' && !payload.loading
-            "
-            :get-child-payload="getCardPayload(column.id)"
-            :drop-placeholder="{
-              className: `bg-primary bg-opacity-20  
-            border-dotted border-2 
-            border-primary rounded-lg mx-4 my-2`,
-              animationDuration: '200',
-              showOnTop: true,
-            }"
-            drag-class="bg-primary dark:bg-primary 
-            border-2 border-primary-hover text-white 
-            transition duration-100 ease-in z-50
-            transform rotate-6 scale-110"
-            drop-class="transition duration-100 
-            ease-in z-50 transform 
-            -rotate-2 scale-90"
-            @drop="(e) => onCardDrop(column.id, e)"
-          >
-            <!-- Items  -->
-            <template v-for="item in column.children">
-              <Draggable :key="item.id" :item="item" v-if="item">
-                <div
-                  class="cursor-move my-2 mx-4 rounded-lg shadow-md bg-gray-100 dark:bg-gray-800 hover:border-2 border-primary"
-                >
-                  <div
-                    v-if="item.loading"
-                    class="flex space-x-2 bg-gray-50 text-gray-900 dark:text-gray-200 dark:bg-gray-900 px-4 py-2 rounded-t-lg"
-                  >
-                    <!-- <RefreshIcon
-                      class="w-6 h-6 animate-spin"
-                      viewBox="0 0 24 24"
-                    ></RefreshIcon> -->
-                    <span>Processing...</span>
-                  </div>
-                  <div class="p-4 space-y-2">
-                    <div
-                      class="rounded-lg bg-primary p-2 w-max h-max inline-block box-content"
-                    >
-                      <!-- {{ emoji }} -->
-                    </div>
-                    <p>{{ item.data }}</p>
-                  </div>
-                </div>
-              </Draggable>
-            </template>
-          </Container>
+ <template>
+ <ul>
+      <li class="adobe-product">
+       <div class="products">
+        <svg viewBox="0 0 52 52" style="border:1px solid #3291b8">
+         <g xmlns="http://www.w3.org/2000/svg">
+          <path d="M40.824 52H11.176C5.003 52 0 46.997 0 40.824V11.176C0 5.003 5.003 0 11.176 0h29.649C46.997 0 52 5.003 52 11.176v29.649C52 46.997 46.997 52 40.824 52z" fill="#061e26" data-original="#393687" />
+          <path d="M12.16 39H9.28V11h9.64c2.613 0 4.553.813 5.82 2.44 1.266 1.626 1.9 3.76 1.9 6.399 0 .934-.027 1.74-.08 2.42-.054.681-.22 1.534-.5 2.561-.28 1.026-.66 1.866-1.14 2.52-.48.654-1.213 1.227-2.2 1.72-.987.494-2.16.74-3.52.74h-7.04V39zm0-12h6.68c.96 0 1.773-.187 2.44-.56.666-.374 1.153-.773 1.46-1.2.306-.427.546-1.04.72-1.84.173-.801.267-1.4.28-1.801.013-.399.02-.973.02-1.72 0-4.053-1.694-6.08-5.08-6.08h-6.52V27zM29.48 33.92l2.8-.12c.106.987.6 1.754 1.48 2.3.88.547 1.893.82 3.04.82s2.14-.26 2.98-.78c.84-.52 1.26-1.266 1.26-2.239s-.36-1.747-1.08-2.32c-.72-.573-1.6-1.026-2.64-1.36-1.04-.333-2.086-.686-3.14-1.06a7.36 7.36 0 01-2.78-1.76c-.987-.934-1.48-2.073-1.48-3.42s.54-2.601 1.62-3.761 2.833-1.739 5.26-1.739c.854 0 1.653.1 2.4.3.746.2 1.28.394 1.6.58l.48.279-.92 2.521c-.854-.666-1.974-1-3.36-1-1.387 0-2.42.26-3.1.78-.68.52-1.02 1.18-1.02 1.979 0 .88.426 1.574 1.28 2.08.853.507 1.813.934 2.88 1.28 1.066.347 2.126.733 3.18 1.16 1.053.427 1.946 1.094 2.68 2s1.1 2.106 1.1 3.6c0 1.494-.6 2.794-1.8 3.9-1.2 1.106-2.954 1.66-5.26 1.66-2.307 0-4.114-.547-5.42-1.64-1.307-1.093-1.987-2.44-2.04-4.04z" fill="#c1dbe6" data-original="#89d3ff" />
+         </g>
+        </svg>
+        Photoshop
+       </div>
+       <span class="status">
+        <span class="status-circle green"></span>
+        Updated</span>
+       <div class="button-wrapper">
+        <button class="content-button status-button open">Open</button>
+        <div class="menu">
+         <button class="dropdown">
+          <ul>
+           <li><a href="#">Go to Discover</a></li>
+           <li><a href="#">Learn more</a></li>
+           <li><a href="#">Uninstall</a></li>
+          </ul>
+         </button>
         </div>
-      </Draggable>
-    </Container>
-  </div>
-</template>
+       </div>
+      </li>
+      <li class="adobe-product">
+       <div class="products">
+        <svg viewBox="0 0 52 52" style="border:1px solid #b65a0b">
+         <g xmlns="http://www.w3.org/2000/svg">
+          <path d="M40.824 52H11.176C5.003 52 0 46.997 0 40.824V11.176C0 5.003 5.003 0 11.176 0h29.649C46.997 0 52 5.003 52 11.176v29.649C52 46.997 46.997 52 40.824 52z" fill="#261400" data-original="#6d4c13" />
+          <path d="M30.68 39h-3.24l-2.76-9.04h-8.32L13.72 39H10.6l8.24-28h3.32l8.52 28zm-6.72-12l-3.48-11.36L17.12 27h6.84zM37.479 12.24c0 .453-.16.84-.48 1.16-.32.319-.7.479-1.14.479-.44 0-.827-.166-1.16-.5-.334-.333-.5-.713-.5-1.14s.166-.807.5-1.141c.333-.333.72-.5 1.16-.5.44 0 .82.16 1.14.48.321.322.48.709.48 1.162zM37.24 39h-2.88V18.96h2.88V39z" fill="#e6d2c0" data-original="#ffbd2e" />
+         </g>
+        </svg>
+        Illustrator
+       </div>
 
-<script>
-import { ref, reactive, onMounted } from 'vue'
-import { Container, Draggable } from 'vue3-smooth-dnd'
-// import { HandIcon, CodeIcon, RefreshIcon } from '@heroicons/vue/outline'
-// import {
-//   applyDrag,
-//   generateItems,
-//   generateWords,
-//   // getRandomEmoji,
-// } from '../utils/helpers'
-const newTodo = ref('')
-const defaultData = [
-  {
-    done: false,
-    content: 'Write a blog post',
-  },
-]
-const todos = []
-const todoLists = [
-  {
-    id: `column1`,
-    type: 'todo',
-    name: 'todo',
-    props: {
-      orientation: 'vertical',
-    },
-    children: [
-      {
-        type: 'todo',
-        id: `0`,
-        loading: false,
-        data: 'lina',
-      },
-      {
-        type: 'todo',
-        id: `0`,
-        loading: false,
-        data: 'fg',
-      },
-      {
-        type: 'todo',
-        id: `0`,
-        loading: false,
-        data: 'yike',
-      },
-    ],
-  },
-  {
-    id: `column2`,
-    type: 'doing',
-    name: 'doing',
-    props: {
-      orientation: 'vertical',
-    },
-    children: [
-      {
-        type: 'doing',
-        id: `0`,
-        loading: false,
-        data: 'lina',
-      },
-      {
-        type: 'doing',
-        id: `0`,
-        loading: false,
-        data: 'fg',
-      },
-      {
-        type: 'doing',
-        id: `0`,
-        loading: false,
-        data: 'yike',
-      },
-    ],
-  },
-  {
-    id: `column3`,
-    type: 'done',
-    name: 'done',
-    props: {
-      orientation: 'vertical',
-    },
-    children: [
-      {
-        type: 'done',
-        id: `0`,
-        loading: false,
-        data: 'lina',
-      },
-      {
-        type: 'done',
-        id: `0`,
-        loading: false,
-        data: 'fg',
-      },
-      {
-        type: 'done',
-        id: `0`,
-        loading: false,
-        data: 'yike',
-      },
-    ],
-  },
-]
-// mock
-const scene = {
-  type: 'container',
-  props: {
-    orientation: 'horizontal',
-  },
-  children: todoLists,
-}
-export default {
-  components: { Container, Draggable, },
-  // components: { Container, Draggable, HandIcon, CodeIcon, RefreshIcon },
-  data() {
-    return {
-      scene,
-      // emoji: getRandomEmoji(),
-      newItem: '',
-      todoItems: [],
-    }
-  },
-  mounted() {
-    this.getTodo()
-  },
-  methods: {
-    getTodo() {
-      // 读取 localStorage 中的数据
-      const storedItems = JSON.parse(localStorage.getItem('items'))
-      if (storedItems) {
-        this.todoItems = storedItems
-      }
-    },
-    addItem() {
-      // 添加新数据到数组
-      this.todoItems.push(this.newItem)
-      this.newItem = ''
-      this.saveData()
-    },
-    addTodo() {
-      if (newTodo.value) {
-        this.todos.value.push({
-          done: false,
-          content: newTodo.value,
-        })
-        this.newTodo.value = ''
-      }
-      this.saveData()
-    },
-    saveData() {
-      // 存储更新后的数据到 localStorage
-      localStorage.setItem('items', JSON.stringify(this.todoItems))
-    },
-    getColumnHeightPx() {
-      let kanban = document.getElementById('kanbanContainer')
-      return kanban ? kanban.offsetHeight - 122 : 0
-    },
-    onColumnDrop(dropResult) {
-      const scene = Object.assign({}, this.scene)
-      scene.children = applyDrag(scene.children, dropResult)
-      this.scene = scene
-    },
-    onCardDrop(columnId, dropResult) {
-      // type=dropResult.payload.type
-
-      // check if element where ADDED or REMOVED in current collumn
-      if (dropResult.removedIndex !== null || dropResult.addedIndex !== null) {
-        const scene = Object.assign({}, this.scene)
-        const column = scene.children.filter((p) => p.id === columnId)[0]
-        const itemIndex = scene.children.indexOf(column)
-        const newColumn = Object.assign({}, column)
-
-        // check if element was ADDED in current column
-        if (dropResult.removedIndex == null && dropResult.addedIndex >= 0) {
-          // your action / api call
-          dropResult.payload.loading = true
-          // simulate api call
-          setTimeout(function () {
-            dropResult.payload.loading = false
-          }, 1000)
-        }
-
-        newColumn.children = applyDrag(newColumn.children, dropResult)
-        scene.children.splice(itemIndex, 1, newColumn)
-        this.scene = scene
-      }
-    },
-    getCardPayload(columnId) {
-      return (index) => {
-        return this.scene.children.filter((p) => p.id === columnId)[0].children[
-          index
-        ]
-      }
-    },
-    applyDrag(arr, dragResult) {
-      const { removedIndex, addedIndex, payload } = dragResult
-      if (removedIndex === null && addedIndex === null) return arr
-      const result = [...arr]
-      let itemToAdd = payload
-      if (removedIndex !== null) {
-        itemToAdd = result.splice(removedIndex, 1)[0]
-      }
-      if (addedIndex !== null) {
-        result.splice(addedIndex, 0, itemToAdd)
-      }
-      return result
-    },
-
-    generateItems(count, creator) {
-      const result = []
-      for (let i = 0; i < count; i++) {
-        result.push(creator(i))
-      }
-      return result
-    },
-  },
-}
-</script>
-<style>
-/** NB: dont remove, 
-* When using orientation="horizontal" it auto sets "display: table"
-* In this case we need flex and not display table  
-*/
-.smooth-dnd-container.horizontal {
-  display: flex !important;
-}
-</style>
+       <span class="status">
+        <span class="status-circle"></span>
+        Update Available</span>
+       <div class="button-wrapper">
+        <button class="content-button status-button">Update this app</button>
+        <div class="pop-up">
+         <div class="pop-up__title">Update This App
+          <svg class="close" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x-circle">
+           <circle cx="12" cy="12" r="10" />
+           <path d="M15 9l-6 6M9 9l6 6" />
+          </svg>
+         </div>
+         <div class="pop-up__subtitle">Adjust your selections for advanced options as desired before continuing. <a href="#">Learn more</a></div>
+         <div class="checkbox-wrapper">
+          <input type="checkbox" id="check1" class="checkbox">
+          <label for="check1">Import previous settings and preferences</label>
+         </div>
+         <div class="checkbox-wrapper">
+          <input type="checkbox" id="check2" class="checkbox">
+          <label for="check2">Remove old versions</label>
+         </div>
+         <div class="content-button-wrapper">
+          <button class="content-button status-button open close">Cancel</button>
+          <button class="content-button status-button">Continue</button>
+         </div>
+        </div>
+        <div class="menu">
+         <button class="dropdown">
+          <ul>
+           <li><a href="#">Go to Discover</a></li>
+           <li><a href="#">Learn more</a></li>
+           <li><a href="#">Uninstall</a></li>
+          </ul>
+         </button>
+        </div>
+       </div>
+      </li>
+      <li class="adobe-product">
+       <div class="products">
+        <svg viewBox="0 0 52 52" style="border: 1px solid #C75DEB">
+         <g xmlns="http://www.w3.org/2000/svg">
+          <path d="M40.824 52H11.176C5.003 52 0 46.997 0 40.824V11.176C0 5.003 5.003 0 11.176 0h29.649C46.997 0 52 5.003 52 11.176v29.649C52 46.997 46.997 52 40.824 52z" fill="#3a3375" data-original="#3a3375" />
+          <path d="M27.44 39H24.2l-2.76-9.04h-8.32L10.48 39H7.36l8.24-28h3.32l8.52 28zm-6.72-12l-3.48-11.36L13.88 27h6.84zM31.48 33.48c0 2.267 1.333 3.399 4 3.399 1.653 0 3.466-.546 5.44-1.64L42 37.6c-2.054 1.254-4.2 1.881-6.44 1.881-4.64 0-6.96-1.946-6.96-5.841v-8.2c0-2.16.673-3.841 2.02-5.04 1.346-1.2 3.126-1.801 5.34-1.801s3.94.594 5.18 1.78c1.24 1.187 1.86 2.834 1.86 4.94V30.8l-11.52.6v2.08zm8.6-5.24v-3.08c0-1.413-.44-2.42-1.32-3.021-.88-.6-1.907-.899-3.08-.899-1.174 0-2.167.359-2.98 1.08-.814.72-1.22 1.773-1.22 3.16v3.199l8.6-.439z" fill="#e4d1eb" data-original="#e7adfb" />
+         </g>
+        </svg>
+        After Effects
+       </div>
+       <span class="status">
+        <span class="status-circle green"></span>
+        Updated</span>
+       <div class="button-wrapper">
+        <button class="content-button status-button open">Open</button>
+        <div class="menu">
+         <button class="dropdown">
+          <ul>
+           <li><a href="#">Go to Discover</a></li>
+           <li><a href="#">Learn more</a></li>
+           <li><a href="#">Uninstall</a></li>
+          </ul>
+         </button>
+        </div>
+       </div>
+      </li>
+     </ul>
+     </template>
