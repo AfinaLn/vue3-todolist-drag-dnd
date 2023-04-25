@@ -1,7 +1,19 @@
 <script setup>
 import { reactive, ref, onMounted, getCurrentInstance } from 'vue';
 import { Container, Draggable } from 'vue3-smooth-dnd'
-import { ElInput } from 'element-plus'
+import {
+    ElButton,
+    ElInput,
+    ElIcon,
+    ElTooltip,
+    ElText,
+    ElDialog,
+    ElForm,
+    ElFormItem,
+    ElSelect,
+    ElOption,
+    ElDatePicker
+} from 'element-plus'
 import { HelpFilled, Refresh, Delete } from '@element-plus/icons-vue'
 const { ctx } = getCurrentInstance()
 const currentDate = ref('2023-4-25');
@@ -9,7 +21,44 @@ let currentObj = reactive({})
 const dialogTitle = ref('')
 const dialogFormVisible = ref(false)
 const wide = ref(false)
-let form = reactive({
+const formLabelWidth = '100px'
+const repeatData = [
+    {
+        label: '无',
+        value: 'no',
+    },
+    {
+        label: '每天',
+        value: 'day',
+    },
+    {
+        label: '每周',
+        value: 'week',
+    },
+    {
+        label: '每月',
+        value: 'month',
+    }
+]
+const priorityData = [
+    {
+        label: '高优先级',
+        value: 'high',
+    },
+    {
+        label: '中优先级',
+        value: 'medium',
+    },
+    {
+        label: '低优先级',
+        value: 'low',
+    },
+    {
+        label: '无优先级',
+        value: 'nomal',
+    }
+]
+let form = ref({
     date: '',
     priority: 'nomal',
     repeat: 'no',
@@ -128,7 +177,7 @@ function openDialog(obj) {
     currentObj = obj;
     dialogTitle.value = obj.content;
     const { date, priority, repeat } = obj;
-    form = { date, priority, repeat };
+    form.value = { date, priority, repeat };
     dialogFormVisible.value = true;
     console.log('==', dialogFormVisible, currentObj, form)
 }
@@ -142,7 +191,7 @@ function submitDialog() {
     console.log('===submit dialog')
     const newScene = Object.assign({}, scene)
     const data = newScene.children;
-    const { date, priority, repeat } = form;
+    const { date, priority, repeat } = form.value;
     const listIndex = data.findIndex(list => list.type === currentObj.type);
     const listItemIndex = data[listIndex].children.findIndex(child => child.id === currentObj.id);
     if (listItemIndex !== -1) {
@@ -517,6 +566,25 @@ function toggleDarkOrLight() {
             <div class="pop-up__title">
                 {{ dialogTitle }}
             </div>
+
+            <el-form :model="form">
+                <el-form-item label="日期" :label-width="formLabelWidth">
+                    <el-date-picker v-model="form.date" type="date" placeholder="选择日期" format="YYYY/MM/DD"
+                        value-format="YYYY-MM-DD" />
+                </el-form-item>
+                <el-form-item label="优先级" :label-width="formLabelWidth">
+                    <el-select v-model="form.priority">
+                        <el-option v-for="(option, index) in priorityData" :key="option.value + index" :label="option.label"
+                            :value="option.value" />
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="重复" :label-width="formLabelWidth">
+                    <el-select v-model="form.repeat">
+                        <el-option v-for="(option, index) in repeatData" :key="option.value + index" :label="option.label"
+                            :value="option.value" />
+                    </el-select>
+                </el-form-item>
+            </el-form>
             <div class="pop-up__subtitle">Adjust your selections for advanced options as desired before continuing. <a
                     href="#">Learn more</a></div>
             <div class="checkbox-wrapper">
