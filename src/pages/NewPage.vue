@@ -2,10 +2,18 @@
 import { reactive, ref, onMounted, getCurrentInstance } from 'vue';
 import { Container, Draggable } from 'vue3-smooth-dnd'
 import { ElInput } from 'element-plus'
-import { HelpFilled, Refresh } from '@element-plus/icons-vue'
-const {ctx} = getCurrentInstance()
+import { HelpFilled, Refresh, Delete } from '@element-plus/icons-vue'
+const { ctx } = getCurrentInstance()
 const currentDate = ref('2023-4-25');
-
+let currentObj = reactive({})
+const dialogTitle = ref('')
+const dialogFormVisible = ref(false)
+const wide = ref(false)
+let form = reactive({
+    date: '',
+    priority: 'nomal',
+    repeat: 'no',
+})
 const priorityColor = {
     high: '#DB3B26',
     medium: '#FFB95B',
@@ -114,6 +122,55 @@ function addTodo() {
 function change() {
     ctx.$forceUpdate()
 }
+
+function openDialog(obj) {
+    if (obj.type === 'done') return;
+    currentObj = obj;
+    dialogTitle.value = obj.content;
+    const { date, priority, repeat } = obj;
+    form = { date, priority, repeat };
+    dialogFormVisible.value = true;
+    console.log('==', dialogFormVisible, currentObj, form)
+}
+function resetDialog() {
+    dialogTitle.value = '';
+    dialogFormVisible.value = false
+    console.log('===close dialog')
+}
+
+function submitDialog() {
+    console.log('===submit dialog')
+    const newScene = Object.assign({}, scene)
+    const data = newScene.children;
+    const { date, priority, repeat } = form;
+    const listIndex = data.findIndex(list => list.type === currentObj.type);
+    const listItemIndex = data[listIndex].children.findIndex(child => child.id === currentObj.id);
+    if (listItemIndex !== -1) {
+        data[listIndex].children[listItemIndex] = {
+            ...data[listIndex].children[listItemIndex],
+            date: date,
+            priority,
+            repeat,
+        };
+    }
+    newScene.children = data;
+    saveData(newScene)
+    resetDialog();
+}
+function submitDel(obj) {
+    const newScene = Object.assign({}, scene)
+    const data = newScene.children;
+    const updatedData = data.map((item) => {
+        if (item.children) {
+            const updatedChildren = item.children.filter((child) => child.id !== obj.id);
+            return { ...item, children: updatedChildren };
+        }
+        return item;
+    });
+    newScene.children = updatedData;
+    saveData(newScene)
+    resetDialog();
+}
 function generateId() {
     const characters =
         'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
@@ -190,83 +247,80 @@ function getTodo() {
 
 function init() {
 
-    $(function () {
-        $(".menu-link").click(function () {
-            $(".menu-link").removeClass("is-active");
-            $(this).addClass("is-active");
-        });
-    });
+    // $(function () {
+    //     $(".menu-link").click(function () {
+    //         $(".menu-link").removeClass("is-active");
+    //         $(this).addClass("is-active");
+    //     });
+    // });
 
-    $(function () {
-        $(".main-header-link").click(function () {
-            $(".main-header-link").removeClass("is-active");
-            $(this).addClass("is-active");
-        });
-    });
+    // $(function () {
+    //     $(".main-header-link").click(function () {
+    //         $(".main-header-link").removeClass("is-active");
+    //         $(this).addClass("is-active");
+    //     });
+    // });
 
-    const dropdowns = document.querySelectorAll(".dropdown");
-    dropdowns.forEach((dropdown) => {
-        dropdown.addEventListener("click", (e) => {
-            e.stopPropagation();
-            dropdowns.forEach((c) => c.classList.remove("is-active"));
-            dropdown.classList.add("is-active");
-        });
-    });
+    // const dropdowns = document.querySelectorAll(".dropdown");
+    // dropdowns.forEach((dropdown) => {
+    //     dropdown.addEventListener("click", (e) => {
+    //         e.stopPropagation();
+    //         dropdowns.forEach((c) => c.classList.remove("is-active"));
+    //         dropdown.classList.add("is-active");
+    //     });
+    // });
 
-    $(".search-bar input")
-        .focus(function () {
-            $(".header").addClass("wide");
-        })
-        .blur(function () {
-            $(".header").removeClass("wide");
-        });
+    // $(".search-bar input")
+    //     .focus(function () {
+    //         $(".header").addClass("wide");
+    //     })
+    //     .blur(function () {
+    //         $(".header").removeClass("wide");
+    //     });
 
-    $(document).click(function (e) {
-        var container = $(".status-button");
-        var dd = $(".dropdown");
-        if (!container.is(e.target) && container.has(e.target).length === 0) {
-            dd.removeClass("is-active");
-        }
-    });
+    // $(document).click(function (e) {
+    //     var container = $(".status-button");
+    //     var dd = $(".dropdown");
+    //     if (!container.is(e.target) && container.has(e.target).length === 0) {
+    //         dd.removeClass("is-active");
+    //     }
+    // });
 
-    $(function () {
-        $(".dropdown").on("click", function (e) {
-            $(".content-wrapper").addClass("overlay");
-            e.stopPropagation();
-        });
-        $(document).on("click", function (e) {
-            if ($(e.target).is(".dropdown") === false) {
-                $(".content-wrapper").removeClass("overlay");
-            }
-        });
-    });
+    // $(function () {
+    //     $(".dropdown").on("click", function (e) {
+    //         $(".content-wrapper").addClass("overlay");
+    //         e.stopPropagation();
+    //     });
+    //     $(document).on("click", function (e) {
+    //         if ($(e.target).is(".dropdown") === false) {
+    //             $(".content-wrapper").removeClass("overlay");
+    //         }
+    //     });
+    // });
 
-    $(function () {
-        $(".status-button:not(.open)").on("click", function (e) {
-            console.log('--', $(".overlay-app"))
-            $(".overlay-app").addClass("is-active");
-        });
-        $(".pop-up .close").click(function () {
-            $(".overlay-app").removeClass("is-active");
-        });
-    });
+    // $(function () {
+    //     $(".status-button:not(.open)").on("click", function (e) {
+    //         console.log('--', $(".overlay-app"))
+    //         $(".overlay-app").addClass("is-active");
+    //     });
+    //     $(".pop-up .close").click(function () {
+    //         $(".overlay-app").removeClass("is-active");
+    //     });
+    // });
 
-    $(".status-button:not(.open)").click(function () {
-        $(".pop-up").addClass("visible");
-    });
+    // $(".status-button:not(.open)").click(function () {
+    //     $(".pop-up").addClass("visible");
+    // });
 
-    $(".pop-up .close").click(function () {
-        $(".pop-up").removeClass("visible");
-    });
+    // $(".pop-up .close").click(function () {
+    //     $(".pop-up").removeClass("visible");
+    // });
 
-    const toggleButton = document.querySelector('.dark-light');
-
-    toggleButton.addEventListener('click', () => {
-        document.body.classList.toggle('light-mode');
-    });
 }
 
-
+function toggleDarkOrLight() {
+    document.body.classList.toggle('light-mode');
+}
 
 </script>
 <template>
@@ -276,14 +330,14 @@ function init() {
             Your browser does not support the video tag.
         </video>
     </div>
-    <div class="dark-light">
+    <div class="dark-light" @click="toggleDarkOrLight">
         <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"
             stroke-linejoin="round">
             <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
         </svg>
     </div>
     <div class="app">
-        <div class="header">
+        <div class="header" :class="{ 'wide': wide }">
             <!-- <div class="menu-circle"></div>
             <div class="header-menu">
                 <a class="menu-link is-active" href="#">Apps</a>
@@ -294,7 +348,8 @@ function init() {
             <div class="search-bar">
                 <!-- <input type="text" v-model="newTodo" placeholder="Search"> -->
                 <el-input v-model="newTodo" placeholder="例如：每天11:30定外卖" clearable class="mr20" autocomplete="off"
-                    name="news" maxlength="18" show-word-limit @input="change()" @keyup.enter.native="addTodo" />
+                    name="news" maxlength="18" show-word-limit @focus="wide = true" @blur="wide = false" @input="change()"
+                    @keyup.enter.native="addTodo" />
             </div>
             <div class="header-profile">
                 <div class="notification">
@@ -378,6 +433,10 @@ function init() {
                                                                     <el-icon size="14" color="#475669">
                                                                         <Refresh />
                                                                     </el-icon>
+                                                                    <el-icon class="ml5" size="14" color="#DB3B26"
+                                                                        @click.stop="submitDel(item)">
+                                                                        <Delete />
+                                                                    </el-icon>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -454,13 +513,9 @@ function init() {
             </div>
         </div>
         <div class="overlay-app"></div>
-        <div class="pop-up">
-            <div class="pop-up__title">Update This App
-                <!-- <svg class="close" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round" class="feather feather-x-circle">
-                    <circle cx="12" cy="12" r="10" />
-                    <path d="M15 9l-6 6M9 9l6 6" />
-                </svg> -->
+        <div class="pop-up" v-if="dialogFormVisible">
+            <div class="pop-up__title">
+                {{ dialogTitle }}
             </div>
             <div class="pop-up__subtitle">Adjust your selections for advanced options as desired before continuing. <a
                     href="#">Learn more</a></div>
@@ -473,8 +528,8 @@ function init() {
                 <label for="check2">Remove old versions</label>
             </div>
             <div class="content-button-wrapper">
-                <button class="content-button status-button open close">Cancel</button>
-                <button class="content-button status-button">Continue</button>
+                <button class="content-button status-button open close" @click="resetDialog">Cancel</button>
+                <button class="content-button status-button" @click="submitDialog">Continue</button>
             </div>
         </div>
     </div>
@@ -1234,8 +1289,10 @@ body.light-mode .video-bg:before {
     z-index: 10;
     background-color: var(--popup-bg);
     width: 500px;
-    visibility: hidden;
-    opacity: 0;
+    display: none;
+    // visibility: hidden;
+    // opacity: 0;
+
     border-radius: 6px;
     display: flex;
     flex-direction: column;
