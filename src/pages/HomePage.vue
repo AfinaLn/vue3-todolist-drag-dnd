@@ -61,7 +61,7 @@
                         <span class="list-left-name">{{ item.content }}</span>
                       </div>
                       <div class="list-right cursor">
-                        <div class="list-right-date">{{ item.dateName }}</div>
+                        <div class="list-right-date">{{ item.date===this.currentDate?'今天': item.date.replace("2023-", "")}}</div>
                         <div class="list-right-icon" v-show="item.repeat!=='no'">
                           <el-icon size="14" color="#475669">
                             <Refresh />
@@ -157,7 +157,7 @@ const todoLists = [
         id: `00001`,
         type: 'todo',
         content: '下班后去超市买零食',
-        date: 'today',
+        date: '2023-5-11',
         dateName: '今天',
         priority: 'low',
         repeat:'no'
@@ -175,7 +175,7 @@ const todoLists = [
         type: 'doing',
         id: `00002`,
         content: '表单校验bug修复',
-        date: 'today',
+        date: '2023-4-25',
         dateName: '今天',
         priority: 'high',
         repeat:'no'
@@ -193,9 +193,9 @@ const todoLists = [
         type: 'done',
         id: `00003`,
         content: '准备晨会内容',
-        date: 'today',
+        date: '2023-4-12',
         dateName: '今天',
-        priority: 'medium',
+        priority: 'nomal',
         repeat: 'day',
       },
     ],
@@ -236,6 +236,7 @@ export default {
   setup() {
     const newTodo = ref('')
     const currentObj= ref('')
+    const currentDate= ref('2023-4-25');
     const dialogFormVisible = ref(false)
     const formLabelWidth = '100px'
     const dialogTitle=ref('')
@@ -286,9 +287,10 @@ export default {
         priority:'nomal',
         repeat: 'no',
       })
-    return {newTodo,form,dialogFormVisible,formLabelWidth,priorityColor,priorityData,repeatData}
+    return {newTodo,form,dialogFormVisible,formLabelWidth,priorityColor,priorityData,repeatData,currentDate}
   },
   mounted() {
+    this.getTodayDate();
     this.getTodo()
     this.animation()
     this.meteor()
@@ -302,12 +304,13 @@ export default {
         type: 'todo',
         id: this.generateId(),
         content: this.newTodo,
-        date: 'today',
+        date: this.currentDate,
         dateName: '今天',
         priority: 'nomal',
         repeat:'no'
       }
-      const data = this.scene.children
+      const scene = Object.assign({}, this.scene)
+      const data = scene.children
       const todoIndex = data.findIndex((column) => column.type === 'todo')
       const todoColumn = data[todoIndex] // 获取该列的对象
       const newTodoChildren = [obj, ...todoColumn.children]
@@ -317,34 +320,35 @@ export default {
         { ...todoColumn, children: newTodoChildren },
         ...data.slice(todoIndex + 1),
       ]
-      this.scene.children = newData
+      scene.children = newData
       this.newTodo = ''
       this.change()
-      this.saveData()
+      this.saveData(scene)
     },
     openDialog(obj) {
+      if(obj.type==='done') return;
       this.currentObj=obj;
       this.dialogTitle=obj.content;
       const {date,priority,repeat}=obj;
       this.form={date,priority,repeat};
-      this.dialogFormVisible = true
-      console.log('aaaa', this.dialogFormVisible)
+      this.dialogFormVisible = true;
     },
     submitDialog(){
-      const data = this.scene.children;
+      const scene = Object.assign({}, this.scene)
+      const data = scene.children;
       const { date,priority,repeat}=this.form;
       const listIndex = data.findIndex(list => list.type === this.currentObj.type);
       const listItemIndex = data[listIndex].children.findIndex(child => child.id === this.currentObj.id);
       if (listItemIndex !== -1) {
         data[listIndex].children[listItemIndex] = {
           ...data[listIndex].children[listItemIndex],
-          dateName:date,
+          date:date,
           priority,
           repeat,
         };
       }
-      this.scene.children=data;
-      this.saveData()
+      scene.children=data;
+      this.saveData(scene)
       this.resetDialog();
     },
     resetDialog(){
@@ -359,7 +363,8 @@ export default {
         this.scene.children = storedItems
       }
     },
-    saveData() {
+    saveData(scene) {
+      this.scene=scene;
       // 存储更新后的数据到 localStorage
       console.log('setItem => loading', this.scene.children)
       localStorage.setItem('items', JSON.stringify(this.scene.children))
@@ -371,8 +376,7 @@ export default {
     onColumnDrop(dropResult) {
       const scene = Object.assign({}, this.scene)
       scene.children = this.applyDrag(scene.children, dropResult)
-      this.scene = scene
-      this.saveData()
+      this.saveData(scene);
     },
     onCardDrop(columnType, dropResult) {
       if (dropResult.removedIndex !== null || dropResult.addedIndex !== null) {
@@ -380,11 +384,22 @@ export default {
         const column = scene.children.filter((p) => p.type === columnType)[0]
         const itemIndex = scene.children.indexOf(column)
         const newColumn = Object.assign({}, column)
-
+        const {type}=dropResult.payload;
+        // 判断是否是移动的target
+        if(dropResult.removedIndex == null && dropResult.addedIndex >= 0) {
+          if(columnType==='done'){
+            // 从done拖动到其他等级变为nomal
+            dropResult.payload.priority='nomal';
+          }
+          if(type==='done'){
+            // 从done拖动到其他地方，日期改为今天
+            dropResult.payload.date=this.currentDate;
+          }
+          dropResult.payload.type=columnType;
+        }
         newColumn.children = this.applyDrag(newColumn.children, dropResult)
         scene.children.splice(itemIndex, 1, newColumn)
-        this.scene = scene
-        this.saveData()
+        this.saveData(scene)
       }
     },
     getCardPayload(columnType) {
@@ -406,6 +421,13 @@ export default {
       }
       return result
     },
+    getTodayDate(){
+      const today = new Date(); 
+      const year = today.getFullYear(); 
+      const month = today.getMonth() + 1;
+      const day = today.getDate(); 
+      this.currentDate=`${year}-${month}-${day}`;
+    },
     generateId() {
       const characters =
         'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
@@ -415,7 +437,6 @@ export default {
       }
       return id
     },
-
     animation() {
       $(function () {
         $('#sun_yellow').animate(
