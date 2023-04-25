@@ -18,7 +18,7 @@
       <div class="page-header-item">asfd</div>
       <div class="page-header-input">
         <el-input v-model="newTodo" placeholder="例如：每天11:30定外卖" clearable class="mr20" autocomplete="off" name="news"
-          maxlength="18" show-word-limit @input="change($event)" @="change($event)"/>
+          maxlength="18" show-word-limit @input="change()" />
         <el-button type="primary" @click="addTodo($event)">提交</el-button>
       </div>
       <div class="page-header-item">asfd</div>
@@ -86,6 +86,8 @@
               v-model="form.date"
               type="date"
               placeholder="选择日期"
+             format="YYYY/MM/DD"
+             value-format="YYYY-MM-DD"
             />
         </el-form-item>
         <el-form-item label="优先级" :label-width="formLabelWidth">
@@ -103,7 +105,7 @@
       </el-form>
       <template #footer>
         <span class="dialog-footer ">
-          <el-button @click="resetDialog()">重置</el-button>
+          <!-- <el-button @click="resetDialog()">重置</el-button> -->
           <el-button type="primary" @click="submitDialog()">
             确定
           </el-button>
@@ -142,7 +144,6 @@ import {
   Refresh,
 } from '@element-plus/icons-vue'
 
-const newTodo = ref('')
 
 const todoLists = [
   {
@@ -233,6 +234,7 @@ export default {
     }
   },
   setup() {
+    const newTodo = ref('')
     const currentObj= ref('')
     const dialogFormVisible = ref(false)
     const formLabelWidth = '100px'
@@ -254,7 +256,7 @@ export default {
       },
       {
         label:'每周',
-        value:'day',
+        value:'week',
       },
       {
         label:'每月',
@@ -284,7 +286,7 @@ export default {
         priority:'nomal',
         repeat: 'no',
       })
-    return {form,dialogFormVisible,formLabelWidth,priorityColor,priorityData,repeatData}
+    return {newTodo,form,dialogFormVisible,formLabelWidth,priorityColor,priorityData,repeatData}
   },
   mounted() {
     this.getTodo()
@@ -333,10 +335,9 @@ export default {
       const { date,priority,repeat}=this.form;
       const listIndex = data.findIndex(list => list.type === this.currentObj.type);
       const listItemIndex = data[listIndex].children.findIndex(child => child.id === this.currentObj.id);
-
       if (listItemIndex !== -1) {
         data[listIndex].children[listItemIndex] = {
-          ...todoLists[listIndex].children[listItemIndex],
+          ...data[listIndex].children[listItemIndex],
           dateName:date,
           priority,
           repeat,
