@@ -15,6 +15,7 @@ import {
     ElDatePicker
 } from 'element-plus'
 import { HelpFilled, Refresh, Delete } from '@element-plus/icons-vue'
+import { computed } from 'vue';
 const { ctx } = getCurrentInstance()
 const currentDate = ref('2023-4-25');
 let currentObj = reactive({})
@@ -136,8 +137,9 @@ let scene = reactive({
     children: todoLists,
 })
 
+const num = computed(() => scene.children.filter(t => t.type === 'todo')[0].children.length)
+
 onMounted(() => {
-    init()
     getTodo()
 })
 
@@ -151,7 +153,8 @@ function addTodo() {
         priority: 'nomal',
         repeat: 'no'
     }
-    const newScene = Object.assign({}, scene)
+    // const newScene = Object.assign({}, scene)
+    const newScene = reactive(scene)
     const data = newScene.children
     const todoIndex = data.findIndex((column) => column.type === 'todo')
     const todoColumn = data[todoIndex] // 获取该列的对象
@@ -166,6 +169,7 @@ function addTodo() {
     newTodo.value = ''
     saveData(newScene)
     change()
+    console.log('sss===sss', scene, newScene)
 }
 function change() {
     ctx.$forceUpdate()
@@ -187,7 +191,7 @@ function resetDialog() {
 
 function submitDialog() {
     console.log('===submit dialog')
-    const newScene = Object.assign({}, scene)
+    const newScene = reactive(scene)
     const data = newScene.children;
     const { date, priority, repeat } = form.value;
     const listIndex = data.findIndex(list => list.type === currentObj.type);
@@ -205,7 +209,7 @@ function submitDialog() {
     resetDialog();
 }
 function submitDel(obj) {
-    const newScene = Object.assign({}, scene)
+    const newScene = reactive(scene)
     const data = newScene.children;
     const updatedData = data.map((item) => {
         if (item.children) {
@@ -292,79 +296,6 @@ function getTodo() {
     }
 }
 
-function init() {
-
-    // $(function () {
-    //     $(".menu-link").click(function () {
-    //         $(".menu-link").removeClass("is-active");
-    //         $(this).addClass("is-active");
-    //     });
-    // });
-
-    // $(function () {
-    //     $(".main-header-link").click(function () {
-    //         $(".main-header-link").removeClass("is-active");
-    //         $(this).addClass("is-active");
-    //     });
-    // });
-
-    // const dropdowns = document.querySelectorAll(".dropdown");
-    // dropdowns.forEach((dropdown) => {
-    //     dropdown.addEventListener("click", (e) => {
-    //         e.stopPropagation();
-    //         dropdowns.forEach((c) => c.classList.remove("is-active"));
-    //         dropdown.classList.add("is-active");
-    //     });
-    // });
-
-    // $(".search-bar input")
-    //     .focus(function () {
-    //         $(".header").addClass("wide");
-    //     })
-    //     .blur(function () {
-    //         $(".header").removeClass("wide");
-    //     });
-
-    // $(document).click(function (e) {
-    //     var container = $(".status-button");
-    //     var dd = $(".dropdown");
-    //     if (!container.is(e.target) && container.has(e.target).length === 0) {
-    //         dd.removeClass("is-active");
-    //     }
-    // });
-
-    // $(function () {
-    //     $(".dropdown").on("click", function (e) {
-    //         $(".content-wrapper").addClass("overlay");
-    //         e.stopPropagation();
-    //     });
-    //     $(document).on("click", function (e) {
-    //         if ($(e.target).is(".dropdown") === false) {
-    //             $(".content-wrapper").removeClass("overlay");
-    //         }
-    //     });
-    // });
-
-    // $(function () {
-    //     $(".status-button:not(.open)").on("click", function (e) {
-    //         console.log('--', $(".overlay-app"))
-    //         $(".overlay-app").addClass("is-active");
-    //     });
-    //     $(".pop-up .close").click(function () {
-    //         $(".overlay-app").removeClass("is-active");
-    //     });
-    // });
-
-    // $(".status-button:not(.open)").click(function () {
-    //     $(".pop-up").addClass("visible");
-    // });
-
-    // $(".pop-up .close").click(function () {
-    //     $(".pop-up").removeClass("visible");
-    // });
-
-}
-
 function toggleDarkOrLight() {
     document.body.classList.toggle('light-mode');
 }
@@ -372,10 +303,35 @@ function toggleDarkOrLight() {
 </script>
 <template>
     <div class="video-bg">
-        <video width="320" height="240" autoplay loop muted>
+        <div class="cv-header">
+
+            <!--Content before waves-->
+            <div class="inner-header">
+            </div>
+
+            <!--Waves Container-->
+            <div>
+                <svg class="waves" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                    viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
+                    <defs>
+                        <path id="gentle-wave"
+                            d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
+                    </defs>
+                    <g class="parallax">
+                        <use xlink:href="#gentle-wave" x="48" y="0" fill="rgba(77,170,233,0.7" />
+                        <use xlink:href="#gentle-wave" x="48" y="3" fill="rgba(220,120,255,0.5)" />
+                        <use xlink:href="#gentle-wave" x="48" y="5" fill="rgba(54,53,115,0.3)" />
+                        <use xlink:href="#gentle-wave" x="48" y="7" fill="rgba(234,45,54,0.6)" />
+                    </g>
+                </svg>
+            </div>
+            <!--Waves end-->
+
+        </div>
+        <!-- <video width="320" height="240" autoplay loop muted>
             <source src="https://assets.codepen.io/3364143/7btrrd.mp4" type="video/mp4">
             Your browser does not support the video tag.
-        </video>
+        </video> -->
     </div>
     <div class="dark-light" @click="toggleDarkOrLight">
         <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"
@@ -385,8 +341,10 @@ function toggleDarkOrLight() {
     </div>
     <div class="app page">
         <div class="header" :class="{ 'wide': wide }">
-            <!-- <div class="menu-circle"></div>
-            <div class="header-menu">
+            <div class="menu-circle">
+            </div>
+            <!-- linear-gradient(to right top, #cf4af3, #ffb0f8, #ffade7, #ff6cbd, #ff6da9, #ffa8be, #ff9ca2, #ff9283, #ff8c51, #ffc583, #ffcf60, #ffe652ab) -->
+            <!-- <div class="header-menu">
                 <a class="menu-link is-active" href="#">Apps</a>
                 <a class="menu-link notify" href="#">Your work</a>
                 <a class="menu-link" href="#">Discover</a>
@@ -400,7 +358,7 @@ function toggleDarkOrLight() {
             </div>
             <div class="header-profile">
                 <div class="notification">
-                    <span class="notification-number">3</span>
+                    <span class="notification-number">{{ num }}</span>
                     <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round" class="feather feather-bell">
                         <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" />
@@ -421,14 +379,14 @@ function toggleDarkOrLight() {
                     <div class="content-section">
                         <!-- <div class="content-section-title">Apps in your plan</div> w-96 p-8 overflow-x-auto-->
                         <div class="apps-card flex-row">
-                            <Container class="h-full flex  gap-8 " group-name="cols" tag="div"
-                                orientation="horizontal" @drop="onColumnDrop($event)">
+                            <Container class="h-full flex  gap-8 " group-name="cols" tag="div" orientation="horizontal"
+                                @drop="onColumnDrop($event)">
                                 <Draggable
                                     class="app-card dragg-wrapper-bg dark:bg-gray-700 rounded-lg h-full  flex-shrink-0 shadow-xl"
                                     v-for="(column, index) in scene.children" :key="index">
                                     <div class=" h-full flex flex-col">
                                         <!-- header -->
-                                        <div class="cursor-move rounded-t-lg p-4 space-x-4 flex space-x-2">
+                                        <div class="drag-header cursor-move rounded-t-lg p-4 space-x-4 flex space-x-2">
                                             <!-- class="cursor-move rounded-t-lg p-4 space-x-4 bg-primary text-white flex space-x-2"> -->
                                             <!-- <span class="text-lg font-header-30">{{ column.name }}</span> -->
                                             <span>
@@ -449,12 +407,12 @@ function toggleDarkOrLight() {
                                         <Container class="page-column flex-grow overflow-y-auto overflow-x-hidden"
                                             group-name="col-items" :shouldAcceptDrop="(e, payload) => e.groupName === 'col-items'
                                                 " :get-child-payload="getCardPayload(column.type)" :drop-placeholder="{
-            className: `bg-primary bg-opacity-20  
-                                            border-dotted border-2 
-                                            border-primary rounded-lg mx-4 my-2`,
-            animationDuration: '200',
-            showOnTop: true,
-        }" drag-class="bg-primary dark:bg-primary 
+                                                    className: `bg-primary bg-opacity-20  
+                                                                                    border-dotted border-2 
+                                                                                    border-primary rounded-lg mx-4 my-2`,
+                                                    animationDuration: '200',
+                                                    showOnTop: true,
+                                                }" drag-class="bg-primary dark:bg-primary 
                                             border-2 border-primary-hover text-white 
                                             transition duration-100 ease-in z-50
                                             transform rotate-6 scale-110" drop-class="transition duration-100 
@@ -462,67 +420,40 @@ function toggleDarkOrLight() {
                                             -rotate-2 scale-90" @drop="(e) => onCardDrop(column.type, e)">
                                             <!-- Items  -->
                                             <template v-for="item in column.children">
-                                                <Draggable :key="item.id" :item="item" v-if="item">
-                                                   <ul @click="openDialog(item)" class="cursor-move">
-                                                    <li class="list adobe-product">
-                                                    <div class="products">
-                                                        <el-icon class="el-input_icon" size="20px"
-                                                            :color="priorityColor[item.priority]">
-                                                            <HelpFilled />
-                                                        </el-icon>
-                                                       {{ item.content }}
-                                                    </div>
-                                                    <div class="button-wrapper list-right  cursor">
-                                                        <div class="list-right cursor">
-                                                            <div class="list-right-date">{{ item.dateName }}</div>
-                                                            <div class="list-right-icon" v-show="item.repeat !== 'no'">
-                                                                <el-icon size="14" class="mr5" color="#396df0">
-                                                                    <Refresh />
-                                                                </el-icon>
-                                                                <el-icon  size="14" color="#DB3B26"
-                                                                    @click.stop="submitDel(item)">
-                                                                    <Delete />
-                                                                </el-icon>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    </li>
-                                                   </ul>
-
-
-
-                                                    <!-- <div @click="openDialog(item)"
-                                                        class="cursor-move my-2 mx-4 rounded-lg shadow-md dark:bg-gray-800 hover:border-2 border-primary">
-                                                        <div class="list adobe-product space-y-2 flex-row space-between">
-                                                            <div
-                                                                class="list-left products rounded-lg p-2 w-max inline-block box-content flex-row">
+                                                <Draggable :key="item.id" :item="item" v-if="item" class="drag-item">
+                                                    <ul @click="openDialog(item)" class="cursor-move">
+                                                        <li class="list adobe-product">
+                                                            <div class="products">
                                                                 <el-icon class="el-input_icon" size="20px"
                                                                     :color="priorityColor[item.priority]">
                                                                     <HelpFilled />
                                                                 </el-icon>
-                                                                <span class="list-left-name">{{ item.content }}</span>
+                                                                {{ item.content }}
                                                             </div>
-                                                            <div class="button-wrapper list-right cursor">
-                                                                <div class="list-right-date">{{ item.dateName }}</div>
-                                                                <div class="list-right-icon" v-show="item.repeat !== 'no'">
-                                                                    <el-icon size="14" color="#475669">
-                                                                        <Refresh />
-                                                                    </el-icon>
-                                                                    <el-icon class="ml5" size="14" color="#DB3B26"
-                                                                        @click.stop="submitDel(item)">
-                                                                        <Delete />
-                                                                    </el-icon>
+                                                            <div class="button-wrapper list-right  cursor">
+                                                                <div class="list-right cursor">
+                                                                    <div class="list-right-date">{{ item.dateName }}</div>
+                                                                    <div class="list-right-icon"
+                                                                        v-show="item.repeat !== 'no'">
+                                                                        <el-icon size="14" class="mr5" color="#396df0">
+                                                                            <Refresh />
+                                                                        </el-icon>
+                                                                        <el-icon size="14" color="#DB3B26"
+                                                                            @click.stop="submitDel(item)">
+                                                                            <Delete />
+                                                                        </el-icon>
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                    </div> -->
+                                                        </li>
+                                                    </ul>
                                                 </Draggable>
                                             </template>
                                         </Container>
                                     </div>
                                 </Draggable>
                             </Container>
-                            
+
                         </div>
                     </div>
                 </div>
@@ -570,9 +501,7 @@ function toggleDarkOrLight() {
 </template>
 
 <style lang="scss">
-
 @import './newPage.scss';
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap");
 
 * {
     outline: none;
@@ -811,14 +740,14 @@ body.light-mode .video-bg:before {
         width: 100%;
         height: 100%;
         border: none;
-        background-color: var(--search-bg);
+        background-color: transparent;
         border-radius: 4px;
         font-family: var(--body-font);
         font-size: 15px;
         font-weight: 500;
         padding: 0 20px 0 40px;
-        box-shadow: 0 0 0 2px rgb(134 140 160 / 2%);
-        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 56.966 56.966' fill='%23717790c7'%3e%3cpath d='M55.146 51.887L41.588 37.786A22.926 22.926 0 0046.984 23c0-12.682-10.318-23-23-23s-23 10.318-23 23 10.318 23 23 23c4.761 0 9.298-1.436 13.177-4.162l13.661 14.208c.571.593 1.339.92 2.162.92.779 0 1.518-.297 2.079-.837a3.004 3.004 0 00.083-4.242zM23.984 6c9.374 0 17 7.626 17 17s-7.626 17-17 17-17-7.626-17-17 7.626-17 17-17z'/%3e%3c/svg%3e");
+        // box-shadow: 0 0 0 2px rgb(134 140 160 / 2%);
+        // background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 56.966 56.966' fill='%23717790c7'%3e%3cpath d='M55.146 51.887L41.588 37.786A22.926 22.926 0 0046.984 23c0-12.682-10.318-23-23-23s-23 10.318-23 23 10.318 23 23 23c4.761 0 9.298-1.436 13.177-4.162l13.661 14.208c.571.593 1.339.92 2.162.92.779 0 1.518-.297 2.079-.837a3.004 3.004 0 00.083-4.242zM23.984 6c9.374 0 17 7.626 17 17s-7.626 17-17 17-17-7.626-17-17 7.626-17 17-17z'/%3e%3c/svg%3e");
         background-size: 14px;
         background-repeat: no-repeat;
         background-position: 16px 48%;
@@ -1012,7 +941,7 @@ body.light-mode .video-bg:before {
     padding: 20px 40px;
     height: 100%;
     overflow: auto;
-    background-color: var(--theme-bg-color);
+    // background-color: var(--theme-bg-color);
     width: calc(100vw - 130px);
 
     @media screen and (max-width: 510px) {
@@ -1162,11 +1091,11 @@ body.light-mode .video-bg:before {
                 background-color: var(--theme-bg-color);
 
                 &:first-child {
-                    border-radius: 13px 13px 0 0;
+                    border-radius: 13px;
                 }
 
                 &:last-child {
-                    border-radius: 0 0 13px 13px;
+                    border-radius: 13px;
                 }
             }
 
@@ -1443,7 +1372,7 @@ body.light-mode .video-bg:before {
     transition: 0.3s ease;
 
     &:hover {
-        transform: scale(1.02);
+        // transform: scale(1.02);
         background-color: var(--theme-bg-color);
     }
 
