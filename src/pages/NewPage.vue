@@ -1,6 +1,7 @@
 <script setup>
 import { reactive, ref, onMounted } from 'vue';
 import { Container, Draggable } from 'vue3-smooth-dnd'
+import { ElInput } from 'element-plus'
 import { HelpFilled, Refresh } from '@element-plus/icons-vue'
 const currentDate = ref('2023-4-25');
 const priorityColor = {
@@ -9,6 +10,8 @@ const priorityColor = {
     low: '#169BFA',
     nomal: '#9da1aa',
 }
+const newTodo = ref('')
+
 const todoLists = [
     {
         type: 'todo',
@@ -78,6 +81,45 @@ onMounted(() => {
     init()
     getTodo()
 })
+
+function addTodo() {
+    const obj = {
+        type: 'todo',
+        id: generateId(),
+        content: newTodo.value,
+        date: currentDate,
+        dateName: '今天',
+        priority: 'nomal',
+        repeat: 'no'
+    }
+    const newScene = Object.assign({}, scene)
+    const data = newScene.children
+    const todoIndex = data.findIndex((column) => column.type === 'todo')
+    const todoColumn = data[todoIndex] // 获取该列的对象
+    const newTodoChildren = [obj, ...todoColumn.children]
+
+    const newData = [
+        ...data.slice(0, todoIndex),
+        { ...todoColumn, children: newTodoChildren },
+        ...data.slice(todoIndex + 1),
+    ]
+    newScene.children = newData
+    newTodo.value = ''
+    // this.change()
+    console.log('addtodo', newScene)
+    saveData(newScene)
+}
+
+function generateId() {
+    const characters =
+        'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    let id = ''
+    for (let i = 0; i < 5; i++) {
+        id += characters.charAt(Math.floor(Math.random() * characters.length))
+    }
+    return id
+}
+
 function onCardDrop(columnType, dropResult) {
     if (dropResult.removedIndex !== null || dropResult.addedIndex !== null) {
         const newScene = Object.assign({}, scene)
@@ -197,6 +239,7 @@ function init() {
 
     $(function () {
         $(".status-button:not(.open)").on("click", function (e) {
+            console.log('--', $(".overlay-app"))
             $(".overlay-app").addClass("is-active");
         });
         $(".pop-up .close").click(function () {
@@ -245,7 +288,9 @@ function init() {
                 <a class="menu-link notify" href="#">Market</a>
             </div> -->
             <div class="search-bar">
-                <input type="text" placeholder="Search">
+                <!-- <input type="text" v-model="newTodo" placeholder="Search"> -->
+                <el-input v-model="newTodo" placeholder="例如：每天11:30定外卖" clearable class="mr20" autocomplete="off"
+                    name="news" maxlength="18" show-word-limit @keyup.enter.native="addTodo" />
             </div>
             <div class="header-profile">
                 <div class="notification">
@@ -405,6 +450,29 @@ function init() {
             </div>
         </div>
         <div class="overlay-app"></div>
+        <div class="pop-up">
+            <div class="pop-up__title">Update This App
+                <!-- <svg class="close" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" class="feather feather-x-circle">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M15 9l-6 6M9 9l6 6" />
+                </svg> -->
+            </div>
+            <div class="pop-up__subtitle">Adjust your selections for advanced options as desired before continuing. <a
+                    href="#">Learn more</a></div>
+            <div class="checkbox-wrapper">
+                <input type="checkbox" id="check1" class="checkbox">
+                <label for="check1">Import previous settings and preferences</label>
+            </div>
+            <div class="checkbox-wrapper">
+                <input type="checkbox" id="check2" class="checkbox">
+                <label for="check2">Remove old versions</label>
+            </div>
+            <div class="content-button-wrapper">
+                <button class="content-button status-button open close">Cancel</button>
+                <button class="content-button status-button">Continue</button>
+            </div>
+        </div>
     </div>
 </template>
 
