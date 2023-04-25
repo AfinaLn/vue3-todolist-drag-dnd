@@ -62,9 +62,12 @@
                       </div>
                       <div class="list-right cursor">
                         <div class="list-right-date">{{ item.date===this.currentDate?'今天': item.date.replace("2023-", "")}}</div>
-                        <div class="list-right-icon" v-show="item.repeat!=='no'">
-                          <el-icon size="14" color="#475669">
+                        <div class="list-right-icon">
+                          <el-icon  v-show="item.repeat!=='no'" size="14" color="#475669">
                             <Refresh />
+                          </el-icon>
+                          <el-icon class="ml5" size="14" color="#DB3B26" @click.stop="openDel(item)">
+                            <Delete />
                           </el-icon>
                         </div>
                       </div>
@@ -126,13 +129,12 @@ import {
   ElIcon,
   ElTooltip,
   ElText,
-  ElMessage,
   ElDialog,
   ElForm,
   ElFormItem,
   ElSelect,
   ElOption,
-  ElDatePicker
+  ElDatePicker,ElMessage, ElMessageBox
 } from 'element-plus'
 import VueHashCalendar from 'vue3-hash-calendar'
 import 'vue3-hash-calendar/es/index.css'
@@ -142,6 +144,7 @@ import {
   Message,
   HelpFilled,
   Refresh,
+  Delete,
 } from '@element-plus/icons-vue'
 
 
@@ -157,7 +160,16 @@ const todoLists = [
         id: `00001`,
         type: 'todo',
         content: '下班后去超市买零食',
-        date: '2023-5-11',
+        date: '2023-05-11',
+        dateName: '今天',
+        priority: 'low',
+        repeat:'no'
+      },
+      {
+        id: `00002`,
+        type: 'todo',
+        content: '下班后去超市买零食',
+        date: '2023-05-11',
         dateName: '今天',
         priority: 'low',
         repeat:'no'
@@ -175,7 +187,7 @@ const todoLists = [
         type: 'doing',
         id: `00002`,
         content: '表单校验bug修复',
-        date: '2023-4-25',
+        date: '2023-04-25',
         dateName: '今天',
         priority: 'high',
         repeat:'no'
@@ -193,7 +205,7 @@ const todoLists = [
         type: 'done',
         id: `00003`,
         content: '准备晨会内容',
-        date: '2023-4-12',
+        date: '2023-04-12',
         dateName: '今天',
         priority: 'nomal',
         repeat: 'day',
@@ -220,13 +232,14 @@ export default {
     ElTooltip,
     ElText,
     Refresh,
+    Delete,
     VueHashCalendar,
     ElDialog,
     ElForm,
     ElFormItem,
     ElSelect,
     ElOption,
-    ElDatePicker
+    ElDatePicker,ElMessage, ElMessageBox
   },
   data() {
     return {
@@ -348,6 +361,45 @@ export default {
         };
       }
       scene.children=data;
+      this.saveData(scene)
+      this.resetDialog();
+    },
+    openDel(obj){
+      ElMessageBox.confirm(
+        '确认删除该任务吗?',
+        obj.content,
+        {
+          confirmButtonText: '确认',
+          cancelButtonText: '取消',
+          type: 'warning',
+          dangerouslyUseHTMLString: true
+        }
+      )
+        .then(() => {
+          this.submitDel(obj);
+          ElMessage({
+            type: 'success',
+            message: '删除成功',
+          })
+        })
+        .catch(() => {
+          ElMessage({
+            type: 'info',
+            message: '取消删除',
+          })
+      })
+    },
+    submitDel(obj){
+      const scene = Object.assign({}, this.scene)
+      const data = scene.children;
+      const updatedData = data.map((item) => {
+        if (item.children) {
+          const updatedChildren = item.children.filter((child) => child.id !== obj.id);
+          return { ...item, children: updatedChildren };
+        }
+        return item;
+      });
+      scene.children=updatedData;
       this.saveData(scene)
       this.resetDialog();
     },
