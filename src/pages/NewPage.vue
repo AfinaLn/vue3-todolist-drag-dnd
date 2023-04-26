@@ -220,6 +220,7 @@ function submitDel(obj) {
     });
     newScene.children = updatedData;
     saveData(newScene)
+    change()
     resetDialog();
 }
 function generateId() {
@@ -447,7 +448,7 @@ function getTodayDate(){
                                                                 <div>asdf</div>
                                                             </div>
                                                             <div class="list-date flex-row space-between">
-                                                                <div class="opcity"> {{item.date}}</div>
+                                                                <div class="opcity"> {{item.date.replace('2023/', '')}}</div>
                                                                 <div class="list-right-icon">
                                                                      <el-icon v-show="item.repeat !== 'no'" size="14" class="mr5" color="#396df0">
                                                                             <Refresh />
