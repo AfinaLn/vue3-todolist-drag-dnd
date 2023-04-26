@@ -17,7 +17,6 @@ import {
 import { HelpFilled, Refresh, Delete } from '@element-plus/icons-vue'
 import { computed } from 'vue';
 const { ctx } = getCurrentInstance()
-let currentDate = ref('2023-04-25');
 let currentObj = reactive({})
 const dialogTitle = ref('')
 const dialogFormVisible = ref(false)
@@ -84,7 +83,7 @@ const todoLists = [
                 id: `00001`,
                 type: 'todo',
                 content: '下班后去超市买零食',
-                date: '2023-05-11',
+                date: '2023/04/13 18:00:00',
                 dateName: '今天',
                 priority: 'low',
                 repeat: 'no'
@@ -102,7 +101,7 @@ const todoLists = [
                 type: 'doing',
                 id: `00002`,
                 content: '表单校验bug修复',
-                date: '2023-04-28',
+                date: '2023/04/28 10:00:00',
                 dateName: '今天',
                 priority: 'high',
                 repeat: 'no'
@@ -120,7 +119,7 @@ const todoLists = [
                 type: 'done',
                 id: `00003`,
                 content: '准备晨会内容',
-                date: '2023-04-12',
+                date: '2023/04/12 08:00:00',
                 dateName: '今天',
                 priority: 'nomal',
                 repeat: 'day',
@@ -149,7 +148,7 @@ function addTodo() {
         type: 'todo',
         id: generateId(),
         content: newTodo.value,
-        date: currentDate,
+        date: getTodayDate(),
         dateName: '今天',
         priority: 'nomal',
         repeat: 'no'
@@ -248,7 +247,7 @@ function onCardDrop(columnType, dropResult) {
             }
             if (type === 'done') {
                 // 从done拖动到其他地方，日期改为今天
-                dropResult.payload.date = currentDate;
+                dropResult.payload.date = getTodayDate();
             }
             dropResult.payload.type = columnType;
         }
@@ -301,13 +300,23 @@ function toggleDarkOrLight() {
     document.body.classList.toggle('light-mode');
 }
 function getTodayDate(){
-      const today = new Date(); 
-      const year = today.getFullYear(); 
-      const month = today.getMonth() + 1;
-      const formatMonth=month<10 ? `0${month}`: month;
-      const day = today.getDate(); 
-      const formatDay=day<10 ? `0${day}`: day;
-      currentDate=`${year}-${formatMonth}-${formatDay}`;
+      // 获取当前日期时间
+        const now = new Date();
+
+        // 解构赋值获取年、月、日、小时、分钟、秒
+        const { year, month, day, hours, minutes, seconds } = {
+        year: now.getFullYear(),
+        month: String(now.getMonth() + 1).padStart(2, '0'),
+        day: String(now.getDate()).padStart(2, '0'),
+        hours: String(now.getHours()).padStart(2, '0'),
+        minutes: String(now.getMinutes()).padStart(2, '0'),
+        seconds: String(now.getSeconds()).padStart(2, '0')
+        };
+
+        // 使用模板字符串将日期时间格式化成指定格式
+      return `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
+       
+
 }
 
 </script>
@@ -388,11 +397,11 @@ function getTodayDate(){
                 <div class="content-wrapper">
                     <div class="content-section">
                         <!-- <div class="content-section-title">Apps in your plan</div> w-96 p-8 overflow-x-auto-->
-                        <div class="apps-card flex-row">
-                            <Container class="h-full flex  gap-8 " group-name="cols" tag="div" orientation="horizontal"
+                        <div class="apps-card ">
+                            <Container class="page-card h-full flex  gap-8 flex-row" group-name="cols" tag="div" orientation="horizontal"
                                 @drop="onColumnDrop($event)">
                                 <Draggable
-                                    class="app-card dragg-wrapper-bg dark:bg-gray-700 rounded-lg h-full  flex-shrink-0 shadow-xl"
+                                    class="page-card-item app-card dragg-wrapper-bg dark:bg-gray-700 rounded-lg h-full  flex-shrink-0 shadow-xl"
                                     v-for="(column, index) in scene.children" :key="index">
                                     <div class=" h-full flex flex-col">
                                         <!-- header -->
@@ -438,7 +447,7 @@ function getTodayDate(){
                                                                 <div>asdf</div>
                                                             </div>
                                                             <div class="list-date flex-row space-between">
-                                                                <div> {{item.date}}</div>
+                                                                <div class="opcity"> {{item.date}}</div>
                                                                 <div class="list-right-icon">
                                                                      <el-icon v-show="item.repeat !== 'no'" size="14" class="mr5" color="#396df0">
                                                                             <Refresh />
@@ -494,8 +503,8 @@ function getTodayDate(){
             </div>
             <el-form class="mtb30" :model="form">
                 <el-form-item label="日期" :label-width="formLabelWidth">
-                    <el-date-picker v-model="form.date" type="date" placeholder="选择日期" format="YYYY/MM/DD"
-                        value-format="YYYY-MM-DD" />
+                    <el-date-picker v-model="form.date" type="datetime" placeholder="选择日期" format="YYYY/MM/DD HH:mm:ss"
+                        value-format="YYYY/MM/DD HH:mm:ss" />
                 </el-form-item>
                 <el-form-item label="优先级" :label-width="formLabelWidth">
                     <el-select v-model="form.priority">
