@@ -2,15 +2,30 @@
     &-column{
         overflow-y: auto;
         height:calc(100vh - 306px);
-        &-item{
-            height: 50px;
-            line-height: 50px;
-        }
+        min-width: 300px;
+
+    }
+    .borderL{
+      cursor:move;
+      height: 60px;
+      line-height: 27px;
+      border-radius: 6px !important;
+      border-left: 6px solid  rgba(#000, 0.35)!important;
+
     }
 
     .list{
-        height: 50px;
-        line-height: 20px;
+      min-width: 280px;
+      align-items: normal;
+      padding:5px 18px 5px 10px ;
+     
+      &-name{
+        font-size: 16px;
+        border-bottom: 1px solid var(--border-color);;
+      }
+      &-date{
+        font-size: 12px;
+      }
         &-left{
             &-name{
                 padding-left: 6px;
@@ -18,7 +33,6 @@
             }
         }
         &-right{
-            // padding-right: 10px;
             &-date{
                 font-size: 12px;
                 color:#3bf083;

@@ -17,7 +17,7 @@ import {
 import { HelpFilled, Refresh, Delete } from '@element-plus/icons-vue'
 import { computed } from 'vue';
 const { ctx } = getCurrentInstance()
-const currentDate = ref('2023-4-25');
+let currentDate = ref('2023-04-25');
 let currentObj = reactive({})
 const dialogTitle = ref('')
 const dialogFormVisible = ref(false)
@@ -84,7 +84,7 @@ const todoLists = [
                 id: `00001`,
                 type: 'todo',
                 content: '下班后去超市买零食',
-                date: 'today',
+                date: '2023-05-11',
                 dateName: '今天',
                 priority: 'low',
                 repeat: 'no'
@@ -102,7 +102,7 @@ const todoLists = [
                 type: 'doing',
                 id: `00002`,
                 content: '表单校验bug修复',
-                date: 'today',
+                date: '2023-04-28',
                 dateName: '今天',
                 priority: 'high',
                 repeat: 'no'
@@ -120,9 +120,9 @@ const todoLists = [
                 type: 'done',
                 id: `00003`,
                 content: '准备晨会内容',
-                date: 'today',
+                date: '2023-04-12',
                 dateName: '今天',
-                priority: 'medium',
+                priority: 'nomal',
                 repeat: 'day',
             },
         ],
@@ -140,6 +140,7 @@ let scene = reactive({
 const num = computed(() => scene.children.filter(t => t.type === 'todo')[0].children.length)
 
 onMounted(() => {
+    getTodayDate();
     getTodo()
 })
 
@@ -299,6 +300,15 @@ function getTodo() {
 function toggleDarkOrLight() {
     document.body.classList.toggle('light-mode');
 }
+function getTodayDate(){
+      const today = new Date(); 
+      const year = today.getFullYear(); 
+      const month = today.getMonth() + 1;
+      const formatMonth=month<10 ? `0${month}`: month;
+      const day = today.getDate(); 
+      const formatDay=day<10 ? `0${day}`: day;
+      currentDate=`${year}-${formatMonth}-${formatDay}`;
+}
 
 </script>
 <template>
@@ -421,9 +431,27 @@ function toggleDarkOrLight() {
                                             <!-- Items  -->
                                             <template v-for="item in column.children">
                                                 <Draggable :key="item.id" :item="item" v-if="item" class="drag-item">
-                                                    <ul @click="openDialog(item)" class="cursor-move">
-                                                        <li class="list adobe-product">
-                                                            <div class="products">
+                                                    <ul @click="openDialog(item)" class="cursor-move borderL " :style="{'borderLeftColor':`${priorityColor[item.priority]} !important` }">
+                                                        <li class="list adobe-product flex-col">
+                                                            <div class="list-name flex-row space-between ">
+                                                                <div> {{item.content}}</div>
+                                                                <div>asdf</div>
+                                                            </div>
+                                                            <div class="list-date flex-row space-between">
+                                                                <div> {{item.date}}</div>
+                                                                <div class="list-right-icon">
+                                                                     <el-icon v-show="item.repeat !== 'no'" size="14" class="mr5" color="#396df0">
+                                                                            <Refresh />
+                                                                        </el-icon>
+                                                                        <el-icon size="14" color="#DB3B26"
+                                                                            @click.stop="submitDel(item)">
+                                                                            <Delete />
+                                                                        </el-icon>
+                                                                </div>
+                                                            </div>
+
+
+                                                            <!-- <div class="products">
                                                                 <el-icon class="el-input_icon" size="20px"
                                                                     :color="priorityColor[item.priority]">
                                                                     <HelpFilled />
@@ -432,10 +460,10 @@ function toggleDarkOrLight() {
                                                             </div>
                                                             <div class="button-wrapper list-right  cursor">
                                                                 <div class="list-right cursor">
-                                                                    <div class="list-right-date">{{ item.dateName }}</div>
+                                                                    <div class="list-right-date">{{ item.date }}</div>
                                                                     <div class="list-right-icon"
-                                                                        v-show="item.repeat !== 'no'">
-                                                                        <el-icon size="14" class="mr5" color="#396df0">
+                                                                        >
+                                                                        <el-icon v-show="item.repeat !== 'no'" size="14" class="mr5" color="#396df0">
                                                                             <Refresh />
                                                                         </el-icon>
                                                                         <el-icon size="14" color="#DB3B26"
@@ -444,7 +472,7 @@ function toggleDarkOrLight() {
                                                                         </el-icon>
                                                                     </div>
                                                                 </div>
-                                                            </div>
+                                                            </div> -->
                                                         </li>
                                                     </ul>
                                                 </Draggable>
