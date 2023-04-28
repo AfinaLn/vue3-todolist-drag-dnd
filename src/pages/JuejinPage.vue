@@ -380,6 +380,7 @@ function getTodayDate() {
                 <el-input v-model="newTodo" placeholder="例如：每天11:30定外卖" clearable class="mr20" autocomplete="off"
                     name="news" maxlength="15" show-word-limit @focus="wide = true" @blur="wide = false" @input="change()"
                     @keyup.enter.native="addTodo" />
+                 <el-button type="primary" class="mlt3"  @input="change()">添加</el-button>
             </div>
             <div class="header-profile">
                 <div class="notification">
