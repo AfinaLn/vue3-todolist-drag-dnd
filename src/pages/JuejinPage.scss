@@ -996,7 +996,13 @@ body.light-mode .video-bg:before {
             }
         }
     }
-
+    .el-checkbox {
+        --el-checkbox-bg-color:rgba(#000,0);
+    }
+    .el-checkbox__inner {
+         border-color: var(--theme-color);
+        //  --theme-bg-color
+    }
     .flex-row {
         display: flex !important;
         flex-direction: row !important;
@@ -1059,6 +1065,15 @@ body.light-mode .video-bg:before {
 
     .opcity {
         opacity: 0.6;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+    }
+
+    .content-section ul svg {
+        width: 20px;
+        margin-right: 5px;
     }
 }
 

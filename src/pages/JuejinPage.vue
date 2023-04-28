@@ -29,9 +29,10 @@ import {
     ElFormItem,
     ElSelect,
     ElOption,
-    ElDatePicker
+    ElDatePicker,
+    ElCheckbox
 } from 'element-plus'
-import { HelpFilled, Refresh, Delete } from '@element-plus/icons-vue'
+import { HelpFilled, Refresh, Delete,Clock } from '@element-plus/icons-vue'
 import 'element-plus/dist/index.css'
 const { ctx } = getCurrentInstance()
 let currentObj = reactive({})
@@ -39,6 +40,8 @@ const dialogTitle = ref('')
 const dialogFormVisible = ref(false)
 const wide = ref(false)
 const formLabelWidth = '70px'
+const checkedType = ref(false)
+
 const repeatData = [
     {
         label: '无',
@@ -81,9 +84,9 @@ let form = ref({
     repeat: 'no',
 })
 const priorityColor = {
-    high: '#DB3B26',
-    medium: '#FFB95B',
-    low: '#396df0',
+    high: '#f96057',
+    medium: '#f8ce52',
+    low: '#5fcf65',
     nomal: '#9da1aa',
 }
 const newTodo = ref('')
@@ -97,13 +100,24 @@ const todoLists = [
         },
         children: [
             {
+                id: `00005`,
+                type: 'todo',
+                content: '周报填写',
+                date: '2023/05/06 18:00:00',
+                dateName: '今天',
+                priority: 'medium',
+                repeat: 'no',
+                checkedType:false
+            },
+            {
                 id: `00001`,
                 type: 'todo',
                 content: '下班后去超市买零食',
-                date: '2023/04/13 18:00:00',
+                date: '2023/05/05 18:00:00',
                 dateName: '今天',
                 priority: 'low',
-                repeat: 'no'
+                repeat: 'no',
+                checkedType:false
             },
         ],
     },
@@ -121,7 +135,8 @@ const todoLists = [
                 date: '2023/04/28 10:00:00',
                 dateName: '今天',
                 priority: 'high',
-                repeat: 'no'
+                repeat: 'no',
+                checkedType:false
             },
         ],
     },
@@ -140,6 +155,7 @@ const todoLists = [
                 dateName: '今天',
                 priority: 'nomal',
                 repeat: 'day',
+                checkedType:false
             },
         ],
     },
@@ -168,7 +184,8 @@ function addTodo() {
         date: getTodayDate(),
         dateName: '今天',
         priority: 'nomal',
-        repeat: 'no'
+        repeat: 'no',
+        checkedType:false
     }
     // const newScene = Object.assign({}, scene)
     const newScene = reactive(scene)
@@ -239,6 +256,55 @@ function submitDel(obj) {
     saveData(newScene)
     change()
     resetDialog();
+}
+function changeType(obj){
+    const {type,targetId}=obj;
+    const typeTep={
+        todo:'doing',
+        doing:'done',
+        done:'todo',
+    }
+    const newType=typeTep[type];
+    let newItem = Object.assign({}, obj);
+    newItem={
+        ...newItem,
+        type:typeTep[type],
+        checkedType:false
+    }
+     if (newType === 'done') {
+        // 从done拖动到其他等级变为nomal
+        newItem.priority = 'nomal';
+    }
+    if (type === 'done') {
+        // 从done拖动到其他地方，日期改为今天
+        newItem.date = getTodayDate();
+    }
+
+    const newScene = reactive(scene)
+    const data=newScene.children;
+    const delIndex = data.findIndex(item => item.type === type);
+    const addIndex = data.findIndex(item => item.type === newType);
+    // 将该任务从数组中删除
+    const index = data[delIndex].children.indexOf(obj);
+    if (index !== -1) {
+        data[delIndex].children.splice(index, 1);
+    }
+    // 将该任务添加到的数组中
+    data[addIndex].children.push(newItem);
+
+    newScene.children = data;
+    saveData(newScene)
+    console.log('scene===',scene);
+}
+
+function deepSceneChild() {
+    const newScene = reactive(scene)
+    return newScene.children;
+}
+function updateHandle(){
+    const todoItem = todoLists[0].children.find(item => item.id === '00005');
+    const doingIndex = todoLists.findIndex(item => item.type === 'doing');
+    todoLists[doingIndex].children.splice(1, 0, todoItem);
 }
 function generateId() {
     const characters =
@@ -380,7 +446,7 @@ function getTodayDate() {
                 <el-input v-model="newTodo" placeholder="例如：每天11:30定外卖" clearable class="mr20" autocomplete="off"
                     name="news" maxlength="15" show-word-limit @focus="wide = true" @blur="wide = false" @input="change()"
                     @keyup.enter.native="addTodo" />
-                 <el-button type="primary" class="mlt3"  @input="change()">添加</el-button>
+                 <!-- <el-button type="primary" class="mlt3"  @input="change()">添加</el-button> -->
             </div>
             <div class="header-profile">
                 <div class="notification">
@@ -431,10 +497,14 @@ function getTodayDate() {
                                                         <li class="list adobe-product flex-col">
                                                             <div class="list-name flex-row space-between ">
                                                                 <div> {{ item.content }}</div>
-                                                                <!-- <div>asdf</div> -->
+                                                                <div  >
+                                                                    <el-checkbox v-model="item.checkedType" @change="changeType(item)" @click.stop.native="()=>{}"/>
+                                                                </div>
                                                             </div>
                                                             <div class="list-date flex-row space-between">
-                                                                <div class="opcity"> {{ item.date.replace('2023/', '') }}
+                                                                <div class="opcity">
+                                                                    <el-icon><Clock /></el-icon> 
+                                                                    {{ item.date.replace('2023/', '') }}
                                                                 </div>
                                                                 <div class="list-right-icon">
                                                                     <el-icon v-show="item.repeat !== 'no'" size="14"
