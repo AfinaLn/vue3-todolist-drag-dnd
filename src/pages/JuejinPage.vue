@@ -155,11 +155,16 @@ const todoLists = [
                 dateName: '今天',
                 priority: 'nomal',
                 repeat: 'day',
-                checkedType:false
+                checkedType:true
             },
         ],
     },
 ]
+const valueTep={
+    todo:false,
+    doing:false,
+    done:true,
+}
 // mock
 let scene = reactive({
     type: 'container',
@@ -260,7 +265,7 @@ function submitDel(obj) {
 function changeType(obj){
     const {type,targetId}=obj;
     const typeTep={
-        todo:'doing',
+        todo:'done',
         doing:'done',
         done:'todo',
     }
@@ -269,7 +274,7 @@ function changeType(obj){
     newItem={
         ...newItem,
         type:typeTep[type],
-        checkedType:false
+        checkedType:valueTep[newType]
     }
      if (newType === 'done') {
         // 从done拖动到其他等级变为nomal
@@ -333,7 +338,9 @@ function onCardDrop(columnType, dropResult) {
                 // 从done拖动到其他地方，日期改为今天
                 dropResult.payload.date = getTodayDate();
             }
+          
             dropResult.payload.type = columnType;
+            dropResult.payload.checkedType = valueTep[columnType];
         }
         newColumn.children = applyDrag(newColumn.children, dropResult)
         newScene.children.splice(itemIndex, 1, newColumn)
