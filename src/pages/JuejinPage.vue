@@ -32,7 +32,7 @@ import {
     ElDatePicker,
     ElCheckbox
 } from 'element-plus'
-import { HelpFilled, Refresh, Delete,Clock } from '@element-plus/icons-vue'
+import { HelpFilled, Refresh, Delete, Clock } from '@element-plus/icons-vue'
 import 'element-plus/dist/index.css'
 const { ctx } = getCurrentInstance()
 let currentObj = reactive({})
@@ -86,8 +86,8 @@ let form = ref({
 const priorityColor = {
     high: '#f96057',
     medium: '#f8ce52',
-    low: '#5fcf65',
-    nomal: '#9da1aa',
+    low: '#3bf083',
+    nomal: '#746dee',
 }
 const newTodo = ref('')
 
@@ -106,8 +106,8 @@ const todoLists = [
                 date: '2023/05/06 18:00:00',
                 dateName: '今天',
                 priority: 'medium',
-                repeat: 'no',
-                checkedType:false
+                repeat: 'day',
+                checkedType: false
             },
             {
                 id: `00001`,
@@ -117,7 +117,7 @@ const todoLists = [
                 dateName: '今天',
                 priority: 'low',
                 repeat: 'no',
-                checkedType:false
+                checkedType: false
             },
         ],
     },
@@ -136,7 +136,7 @@ const todoLists = [
                 dateName: '今天',
                 priority: 'high',
                 repeat: 'no',
-                checkedType:false
+                checkedType: false
             },
         ],
     },
@@ -155,7 +155,7 @@ const todoLists = [
                 dateName: '今天',
                 priority: 'nomal',
                 repeat: 'day',
-                checkedType:false
+                checkedType: false
             },
         ],
     },
@@ -177,6 +177,7 @@ onMounted(() => {
 })
 
 function addTodo() {
+    if(newTodo.value.trim() === '') return;
     const obj = {
         type: 'todo',
         id: generateId(),
@@ -185,7 +186,7 @@ function addTodo() {
         dateName: '今天',
         priority: 'nomal',
         repeat: 'no',
-        checkedType:false
+        checkedType: false
     }
     // const newScene = Object.assign({}, scene)
     const newScene = reactive(scene)
@@ -257,21 +258,21 @@ function submitDel(obj) {
     change()
     resetDialog();
 }
-function changeType(obj){
-    const {type,targetId}=obj;
-    const typeTep={
-        todo:'doing',
-        doing:'done',
-        done:'todo',
+function changeType(obj) {
+    const { type, targetId } = obj;
+    const typeTep = {
+        todo: 'doing',
+        doing: 'done',
+        done: 'todo',
     }
-    const newType=typeTep[type];
+    const newType = typeTep[type];
     let newItem = Object.assign({}, obj);
-    newItem={
+    newItem = {
         ...newItem,
-        type:typeTep[type],
-        checkedType:false
+        type: typeTep[type],
+        checkedType: false
     }
-     if (newType === 'done') {
+    if (newType === 'done') {
         // 从done拖动到其他等级变为nomal
         newItem.priority = 'nomal';
     }
@@ -281,7 +282,7 @@ function changeType(obj){
     }
 
     const newScene = reactive(scene)
-    const data=newScene.children;
+    const data = newScene.children;
     const delIndex = data.findIndex(item => item.type === type);
     const addIndex = data.findIndex(item => item.type === newType);
     // 将该任务从数组中删除
@@ -294,14 +295,14 @@ function changeType(obj){
 
     newScene.children = data;
     saveData(newScene)
-    console.log('scene===',scene);
+    console.log('scene===', scene);
 }
 
 function deepSceneChild() {
     const newScene = reactive(scene)
     return newScene.children;
 }
-function updateHandle(){
+function updateHandle() {
     const todoItem = todoLists[0].children.find(item => item.id === '00005');
     const doingIndex = todoLists.findIndex(item => item.type === 'doing');
     todoLists[doingIndex].children.splice(1, 0, todoItem);
@@ -446,7 +447,7 @@ function getTodayDate() {
                 <el-input v-model="newTodo" placeholder="例如：每天11:30定外卖" clearable class="mr20" autocomplete="off"
                     name="news" maxlength="15" show-word-limit @focus="wide = true" @blur="wide = false" @input="change()"
                     @keyup.enter.native="addTodo" />
-                 <!-- <el-button type="primary" class="mlt3"  @input="change()">添加</el-button> -->
+                <!-- <el-button type="primary" class="mlt3"  @input="change()">添加</el-button> -->
             </div>
             <div class="header-profile">
                 <div class="notification">
@@ -497,24 +498,56 @@ function getTodayDate() {
                                                         <li class="list adobe-product flex-col">
                                                             <div class="list-name flex-row space-between ">
                                                                 <div> {{ item.content }}</div>
-                                                                <div  >
-                                                                    <el-checkbox v-model="item.checkedType" @change="changeType(item)" @click.stop.native="()=>{}"/>
+                                                                <div>
+                                                                    <el-checkbox v-model="item.checkedType"
+                                                                        @change="changeType(item)"
+                                                                        @click.stop.native="() => { }" />
                                                                 </div>
                                                             </div>
                                                             <div class="list-date flex-row space-between">
                                                                 <div class="opcity">
-                                                                    <el-icon><Clock /></el-icon> 
+                                                                    <svg t="1682682900155" class="icon"
+                                                                        viewBox="0 0 1024 1024" version="1.1"
+                                                                        xmlns="http://www.w3.org/2000/svg" p-id="4312"
+                                                                        width="24" height="24" fill="currentColor">
+                                                                        <path
+                                                                            d="M762.4 128.2c-2.6-0.2-5.2-0.2-7.8-0.2h-0.4c-32.4 0-64 10.8-89.2 30.2-3.2 2.6-5.2 6.4-5.4 10.4-0.2 4 1.6 8 4.6 10.8l179.6 161c2.6 2.2 5.8 3.6 9.2 3.6h0.8c3.8-0.2 7.2-2 9.6-4.8C881.8 318 896 301.6 896 266c0.2-72.8-58.2-133.6-133.6-137.8zM128 266c0 35.6 14.2 52 32.6 73.2 2.4 2.8 5.8 4.6 9.6 4.8h0.8c3.4 0 6.6-1.2 9.2-3.6L360 179.4c3-2.8 4.8-6.6 4.6-10.8-0.2-4-2-7.8-5.4-10.4C334 138.8 302.4 128 270 128h-0.4c-2.6 0-5.2 0-7.8 0.2-75.4 4.2-134 65-133.8 137.8z"
+                                                                            p-id="4313"></path>
+                                                                        <path
+                                                                            d="M780 772c52.4-61.4 84-141 84-228 0-194.4-157.6-352-352-352S160 349.6 160 544c0 87 31.6 166.6 84 228l-69.4 71c-12.4 12.6-12 31 0.6 43.2 6.2 6 14.8 9.6 22.8 9.6 8.4 0 16.2-3.8 22.4-10.2l69.2-69c60.6 49.4 138 79.2 222.4 79.2s161.8-29.6 222.4-79.2l67.2 69c6.2 6.4 14.6 10.2 23 10.2 8 0 16.2-3.6 22.4-9.6 12.6-12.4 15-30.6 2.6-43.2L780 772zM540 548c0 15.4-12.6 28-28 28h-164c-15.4 0-28-12.6-28-28s12.6-28 28-28h136V316c0-15.4 12.6-28 28-28s28 12.6 28 28v232z"
+                                                                            p-id="4314"></path>
+                                                                    </svg>
                                                                     {{ item.date.replace('2023/', '') }}
                                                                 </div>
-                                                                <div class="list-right-icon">
-                                                                    <el-icon v-show="item.repeat !== 'no'" size="14"
+                                                                <div class="list-right-icon flex">
+                                                                    <div v-show="item.repeat !== 'no'">
+                                                                        <svg t="1682682580782" class="icon-repeat"
+                                                                            viewBox="0 0 1024 1024" version="1.1"
+                                                                            xmlns="http://www.w3.org/2000/svg" p-id="4156"
+                                                                            width="24" height="24" fill="currentColor">
+                                                                            <path
+                                                                                d="M984 514.2c-5.2-5.2-12-8-19.2-8-7.2 0-14 2.8-19.2 8l-26 26c8.6-123.6-39-245-130.6-330C713.8 140.4 615.4 102 512.2 102c-53.4 0-105.6 10.2-154.8 30.2-51 20.8-96.6 51.2-135.4 90.6-26.4 26.8-49.2 57-67.2 89.6-3.8 6.8-4.6 14.8-2.4 22.2 2.2 7.4 7.6 13.6 14.4 17 4 2 8.4 3 12.8 3 10.4 0 19.8-5.6 24.8-14.6 15.8-28.6 35.6-55 58.8-78.2 33.6-33.6 72.6-59.6 116.2-77.4 42.2-17.2 86.8-25.8 132.4-25.8 45.8 0 90.4 8.6 132.6 25.8 43.6 17.8 82.8 43.8 116.4 77.6 40.6 40.8 70.8 91.2 87.6 146 14 45.8 18.4 94.6 13.2 142.4l-37.8-37c-5-4.8-11.6-7.6-18.6-7.6-7 0-13.8 2.8-18.8 7.8-10.4 10.4-10.4 27.2 0 37.6l85.6 85.8c3.8 3.8 8.8 5.8 14 5.8 5.2 0 10.2-2 14-5.8l84.2-84.4c10.4-10.6 10.4-27.8-0.2-38.4z m-126.8 157.6c-4-2-8.4-3-12.8-3-10.4 0-19.8 5.6-24.8 14.6-15.8 28.6-35.6 55-58.8 78.2-33.6 33.6-72.6 59.8-116.4 77.4-42.2 17.2-86.8 25.8-132.6 25.8s-90.4-8.6-132.4-25.8c-43.6-17.8-82.8-43.8-116.4-77.4-75.2-75.6-112-181.8-100.6-287.8l36.8 37c4.8 4.8 11.2 7.4 18 7.4 6.8 0 13.2-2.6 18-7.4l2.6-2.6c9.8-9.8 9.8-26 0-35.8l-85.8-86c-3.8-3.8-8.8-5.8-14-5.8-5.2 0-10.2 2-14 5.8l-84 84.6c-10.6 10.6-10.6 27.8 0 38.4 5.2 5.2 12 8 19.2 8 7.2 0 14-2.8 19.2-8l26-26.2c-3.6 51.6 2.6 104 18 153 19.8 62.8 53.6 118.6 100.6 165.6 39 39.2 84.4 69.4 135.2 90.2 49 20 100.8 30 153.8 30 53 0 104.8-10.2 153.8-30 50.8-20.6 96.2-51 135.2-90.2 27-27 50-57.6 68.4-90.8 3.8-6.8 4.6-14.8 2.4-22.2-2.4-7.4-7.6-13.6-14.6-17z"
+                                                                                p-id="4157"></path>
+                                                                        </svg>
+                                                                    </div>
+                                                                    <!-- <el-icon v-show="item.repeat !== 'no'" size="14"
                                                                         class="mr5" color="#396df0">
                                                                         <Refresh />
-                                                                    </el-icon>
-                                                                    <el-icon size="14" color="#DB3B26"
+                                                                    </el-icon> -->
+                                                                    <div class="svg-icon" @click.stop="submitDel(item)">
+                                                                        <svg t="1682682505644" class="icon-del"
+                                                                            viewBox="0 0 1024 1024" version="1.1"
+                                                                            xmlns="http://www.w3.org/2000/svg" p-id="20660"
+                                                                            width="24" height="24" fill="currentColor">
+                                                                            <path
+                                                                                d="M725.333333 256h213.333334v85.333333h-85.333334v554.666667a42.666667 42.666667 0 0 1-42.666666 42.666667H213.333333a42.666667 42.666667 0 0 1-42.666666-42.666667V341.333333H85.333333V256h213.333334V128a42.666667 42.666667 0 0 1 42.666666-42.666667h341.333334a42.666667 42.666667 0 0 1 42.666666 42.666667v128z m42.666667 85.333333H256v512h512V341.333333zM384 170.666667v85.333333h256V170.666667H384z"
+                                                                                p-id="20661"></path>
+                                                                        </svg>
+                                                                    </div>
+                                                                    <!-- <el-icon size="14" color="#DB3B26"
                                                                         @click.stop="submitDel(item)">
                                                                         <Delete />
-                                                                    </el-icon>
+                                                                    </el-icon> -->
                                                                 </div>
                                                             </div>
                                                         </li>
@@ -554,12 +587,9 @@ function getTodayDate() {
                 </el-form-item>
             </el-form>
             <div class="content-button-wrapper">
-                <button class="content-button status-button open close" @click="resetDialog">取消</button>
-                <button class="content-button status-button" @click="submitDialog">确认</button>
+            <button class="content-button status-button open close" @click="resetDialog">取消</button>
+            <button class="content-button status-button" @click="submitDialog">确认</button>
         </div>
     </div>
-</div>
-</template>
-<style lang="scss">
-@import './JuejinPage.scss';
-</style>
+</div></template>
+<style lang="scss">@import './JuejinPage.scss';</style>
