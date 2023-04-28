@@ -487,4 +487,8 @@ function getTodayDate() {
                 <button class="content-button status-button" @click="submitDialog">确认</button>
         </div>
     </div>
-</div></template>
+</div>
+</template>
+<style lang="scss">
+@import './JuejinPage.scss';
+</style>
