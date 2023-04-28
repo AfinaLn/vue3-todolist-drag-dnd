@@ -410,7 +410,7 @@ function getTodayDate(){
                                             <!-- class="cursor-move rounded-t-lg p-4 space-x-4 bg-primary text-white flex space-x-2"> -->
                                             <!-- <span class="text-lg font-header-30">{{ column.name }}</span> -->
                                             <span>
-                                                <svg viewBox="0 0 512 512" style="border: 1px solid #a059a9">
+                                                <!-- <svg viewBox="0 0 512 512" style="border: 1px solid #a059a9">
                                                     <path xmlns="http://www.w3.org/2000/svg"
                                                         d="M480 0H32C14.368 0 0 14.368 0 32v448c0 17.664 14.368 32 32 32h448c17.664 0 32-14.336 32-32V32c0-17.632-14.336-32-32-32z"
                                                         fill="#210027" data-original="#7b1fa2" />
@@ -419,7 +419,7 @@ function getTodayDate(){
                                                             d="M192 64h-80c-8.832 0-16 7.168-16 16v352c0 8.832 7.168 16 16 16s16-7.168 16-16V256h64c52.928 0 96-43.072 96-96s-43.072-96-96-96zm0 160h-64V96h64c35.296 0 64 28.704 64 64s-28.704 64-64 64zM400 256h-32c-18.08 0-34.592 6.24-48 16.384V272c0-8.864-7.168-16-16-16s-16 7.136-16 16v160c0 8.832 7.168 16 16 16s16-7.168 16-16v-96c0-26.464 21.536-48 48-48h32c8.832 0 16-7.168 16-16s-7.168-16-16-16z"
                                                             fill="#f6e7fa" data-original="#e1bee7" />
                                                     </g>
-                                                </svg>
+                                                </svg> -->
                                                 {{ column.name }}
                                             </span>
                                         </div>
@@ -445,7 +445,7 @@ function getTodayDate(){
                                                         <li class="list adobe-product flex-col">
                                                             <div class="list-name flex-row space-between ">
                                                                 <div> {{item.content}}</div>
-                                                                <div>asdf</div>
+                                                                <!-- <div>asdf</div> -->
                                                             </div>
                                                             <div class="list-date flex-row space-between">
                                                                 <div class="opcity"> {{item.date.replace('2023/', '')}}</div>
@@ -660,7 +660,7 @@ img {
     }
 
     .dropdown.is-active ul {
-        background-color: rgb(255 255 255 / 94%);
+        background-color: rgba(255, 255, 255, 94%);
     }
 }
 
@@ -672,7 +672,7 @@ body.light-mode .video-bg:before {
     top: 0;
     width: 100%;
     height: 100vh;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.72) 0%, rgb(255 255 255 / 45%) 100%);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.72) 0%, rgba(255, 255, 255, 45%) 100%);
     backdrop-filter: saturate(3);
 }
 
@@ -1129,11 +1129,11 @@ body.light-mode .video-bg:before {
                 background-color: var(--theme-bg-color);
 
                 &:first-child {
-                    border-radius: 13px;
+                    border-radius: 6px;
                 }
 
                 &:last-child {
-                    border-radius: 13px;
+                    border-radius: 6px;
                 }
             }
 

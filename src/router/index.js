@@ -6,6 +6,7 @@ import NotFound from '/src/pages/NotFound.vue'
 import HomePage from '/src/pages/HomePage.vue'
 import Todo from '/src/pages/TodoPage.vue'
 import NewPage from '/src/pages/NewPage.vue'
+import JuejinPage from '/src/pages/JuejinPage.vue'
 
 
 
@@ -18,7 +19,7 @@ const routes = [
   {
     path: '/new',
     name: 'new',
-    component: NewPage,
+    component: JuejinPage,
   },
   {
     path: '/kanban',
