@@ -252,7 +252,7 @@ function generateId() {
 
 function onCardDrop(columnType, dropResult) {
     if (dropResult.removedIndex !== null || dropResult.addedIndex !== null) {
-        const newScene = Object.assign({}, scene)
+        const newScene = reactive(scene)
         const column = newScene.children.filter((p) => p.type === columnType)[0]
         const itemIndex = newScene.children.indexOf(column)
         const newColumn = Object.assign({}, column)
@@ -275,7 +275,7 @@ function onCardDrop(columnType, dropResult) {
     }
 }
 function onColumnDrop(dropResult) {
-    const newScene = Object.assign({}, scene)
+    const newScene = reactive(scene)
     newScene.children = applyDrag(newScene.children, dropResult)
     saveData(newScene);
 }
